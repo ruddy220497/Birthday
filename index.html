@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parlin to Vadodara | R & F 💖</title>
+<style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html,body{height:100%;font-family:'Georgia',serif;background:#050714;color:#fff;overflow:hidden; scroll-behavior: smooth;}
+    .stars{position:fixed;inset:0;background:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(2px 2px at 40% 50%,#fff,transparent);background-size:200% 200%;animation:drift 100s linear infinite;z-index:-1;}
+    @keyframes drift{from{background-position:0 0} to{background-position:200% 200%;}}
+
+    /* INTERFACE */
+    .meter-container { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); width: 250px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; border: 1px solid #ff69b4; z-index: 2000; }
+    .meter-fill { width: 0%; height: 100%; background: #ff69b4; border-radius: 10px; transition: 1.2s; box-shadow: 0 0 10px #ff69b4; }
+    .clock-container { position: fixed; bottom: 15px; right: 15px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 10px; border-radius: 12px; border: 1px solid #ff69b4; z-index: 2000; font-size: 0.7rem; text-align: right; line-height: 1.4; }
+
+    .reel{height:100vh; overflow-y: hidden; scroll-snap-type: y mandatory;}
+    .frame{height:100vh; scroll-snap-align:start; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center; position:relative;}
+    .text{max-width:800px; font-size:2rem; line-height:1.5; margin-bottom:20px; text-shadow: 0 0 10px #ff69b4;}
+
+    /* MAP & FLIGHT */
+    .map-svg { width: 100%; max-width: 700px; height: auto; overflow: visible; }
+    .path-dotted { stroke: rgba(255,105,180,0.4); stroke-width: 2; fill: none; stroke-dasharray: 8; }
+    #plane-icon { font-size: 24px; offset-path: path("M100,200 C150,50 550,50 700,250"); offset-rotate: auto; position: absolute; display: none; z-index: 10; }
+
+    /* GAME UI */
+    .box{background:rgba(255,255,255,0.08); backdrop-filter:blur(15px); border:1px solid rgba(255,255,255,0.2); padding:25px; border-radius:20px; width:100%; max-width:450px;}
+    .btn-opt{display:block; width:100%; padding:12px; margin:8px 0; background:transparent; border:1px solid #ff69b4; color:#fff; border-radius:30px; cursor:pointer; font-family: inherit; transition: 0.3s;}
+    .btn-opt:hover{background: rgba(255,105,180,0.3);}
+    
+    .scratch-gallery { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;}
+    .scratch-card { position: relative; width: 130px; height: 130px; border: 1px solid #ff69b4; border-radius: 10px; overflow: hidden; background: #1a2147; }
+    .scratch-canvas { position: absolute; top: 0; left: 0; z-index: 2; cursor: crosshair; touch-action: none; }
+    .scratch-reveal { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #ff69b4; padding: 5px; z-index: 1; text-align: center; font-weight: bold;}
+
+    .ttt-grid{display:grid; grid-template-columns:repeat(3, 75px); gap:8px; margin-top:15px;}
+    .cell{width:75px; height:75px; background:rgba(255,255,255,0.1); border:1px solid #ff69b4; display:flex; align-items:center; justify-content:center; font-size:2rem; cursor:pointer; border-radius: 8px;}
+
+    /* HEART PATH */
+    .path-line{ stroke:#ff69b4; stroke-width:3; fill: rgba(255, 105, 180, 0); filter:drop-shadow(0 0 10px #ff69b4); opacity:0; transition: opacity 2s, fill 2s; }
+    .step{position:absolute; width:26px; height:26px; background:#ff69b4; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:10px; z-index: 5;}
+    #heartInitials { position:absolute; font-size:3rem; color:#ff69b4; top:50%; left:50%; transform:translate(-50%,-50%); opacity:0; font-weight:bold; transition: opacity 2s; z-index: 10; }
+
+    /* GIFT */
+    .gift-container { position: relative; width: 150px; height: 150px; cursor: pointer; }
+    .gift-box { width: 100%; height: 100%; background: #ff69b4; border-radius: 8px; position: relative; transition: 0.5s; z-index: 2;}
+    .gift-lid { width: 110%; height: 30px; background: #ff1493; position: absolute; top: -10px; left: -5%; border-radius: 4px; transition: 0.8s; z-index: 3;}
+    .unwrapped .gift-lid { transform: translateY(-100px) rotate(20deg); opacity: 0; }
+    .unwrapped .gift-box { transform: scale(0); opacity: 0; }
+    .reveal-gift { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #fff; color: #000; border-radius: 8px; opacity: 0; transform: scale(0.5); transition: 1s; z-index: 1; padding: 10px; text-align: center; font-weight: bold;}
+    .unwrapped .reveal-gift { opacity: 1; transform: scale(1.3); z-index: 4; }
+
+    .modal{position:fixed; inset:0; background:rgba(0,0,0,0.95); display:none; align-items:center; justify-content:center; z-index:4000;}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<audio id="bgm" loop><source src="bollywood-love.mp3" type="audio/mpeg"></audio>
+
+<div class="meter-container"><div class="meter-fill" id="loveMeter"></div></div>
+<div class="clock-container">
+    <div style="color:#ff69b4; font-weight:bold; margin-bottom:4px;">Parlin ✈️ Vadodara</div>
+    <div>Parlin (EST): <span id="myTime">00:00</span></div>
+    <div>Vadodara (IST): <span id="herTime">00:00</span></div>
+</div>
+
+<div class="reel" id="reel">
+    <section class="frame"><div class="text" id="typewriter"></div><button class="btn-opt" style="width:180px" onclick="unlockNext()">Enter the Quest</button></section>
+
+    <section class="frame">
+        <div class="text">Connecting Our Worlds 🌍</div>
+        <div style="position: relative; width: 100%; max-width: 700px;">
+            <div id="plane-icon">✈️</div>
+            <svg class="map-svg" viewBox="0 0 800 400">
+                <path id="flight-path" class="path-dotted" d="M100,200 C150,50 550,50 700,250" />
+                <circle cx="100" cy="200" r="5" fill="#ff69b4" />
+                <circle cx="700" cy="250" r="5" fill="#ff69b4" />
+            </svg>
+        </div>
+        <div id="wish-status" style="margin-top:10px; font-style:italic; color:#ff69b4;">Parlin to Vadodara...</div>
+        <button id="start-btn" class="btn-opt" style="width:220px; margin-top:20px;" onclick="startFlight()">Send Birthday Wishes</button>
+    </section>
+
+    <section class="frame">
+        <div class="text">The Memory Quiz 🧠</div>
+        <div class="box" id="quizBox">
+            <p id="qText" style="margin-bottom:15px;"></p>
+            <div id="quizOptions"></div>
+        </div>
+    </section>
+
+    <section class="frame">
+        <div class="text">Scratch Away the Distance 💌</div>
+        <div class="scratch-gallery">
+            <div class="scratch-card"><div class="scratch-reveal">One Free Hug 🫂</div><canvas class="scratch-canvas" width="130" height="130"></canvas></div>
+            <div class="scratch-card"><div class="scratch-reveal">Coming Soon ✈️</div><canvas class="scratch-canvas" width="130" height="130"></canvas></div>
+            <div class="scratch-card"><div class="scratch-reveal">Always Yours ❤️</div><canvas class="scratch-canvas" width="130" height="130"></canvas></div>
+        </div>
+        <button id="scratch-unlock-btn" class="btn-opt" style="width:200px; display:none;" onclick="updateMeter(55); reveal('Secrets found! Ready for Level 4?', true)">Continue Journey</button>
+        <p id="scratch-hint" style="margin-top:15px; opacity:0.6;">Scratch deeply to reveal the messages!</p>
+    </section>
+
+    <section class="frame">
+        <div class="text">XOXO Challenge ⭕❌</div>
+        <div class="ttt-grid">
+            <div class="cell" onclick="playTTT(0)"></div><div class="cell" onclick="playTTT(1)"></div><div class="cell" onclick="playTTT(2)"></div>
+            <div class="cell" onclick="playTTT(3)"></div><div class="cell" onclick="playTTT(4)"></div><div class="cell" onclick="playTTT(5)"></div>
+            <div class="cell" onclick="playTTT(6)"></div><div class="cell" onclick="playTTT(7)"></div><div class="cell" onclick="playTTT(8)"></div>
+        </div>
+        <p style="margin-top:10px; font-size:0.8rem; color:#ff69b4;">You must win to earn the next level!</p>
+    </section>
+
+    <section class="frame">
+        <div class="text">Why I Love You 💌</div>
+        <div class="box">
+            <p id="reasonDisplay" style="font-style: italic; min-height: 60px;">Click for a reason...</p>
+            <button class="btn-opt" onclick="genReason()">Generate New Note</button>
+            <button class="btn-opt" style="border-style:dashed" onclick="unlockNext()">Go to Finale</button>
+        </div>
+    </section>
+
+    <section class="frame" id="pathFrame">
+        <div id="pathArea" style="position:relative; width:450px; height:450px;">
+            <svg width="450" height="450"><path id="heartPath" class="path-line"></path></svg>
+            <div id="heartInitials">R & F</div>
+        </div>
+    </section>
+
+    <section class="frame">
+        <div class="text">Happy Birthday! 🎁</div>
+        <div class="gift-container" id="gift" onclick="unwrap()">
+            <div class="gift-lid"></div><div class="gift-box"></div>
+            <div class="reveal-gift">Happy Birthday, Farhat! 🎂 <br> Love knows no distance. ❤️</div>
+        </div>
+    </section>
+</div>
+
+<div class="modal" id="modal"><div style="background:#0b1023; padding:40px; border-radius:20px; border:2px solid #ff69b4; text-align:center;"><p id="modalMsg"></p><br><button onclick="closeModal()" style="color:#ff69b4; background:none; border:none; cursor:pointer; font-weight:bold;">Next</button></div></div>
+
+<script>
+    const bgm = document.getElementById('bgm');
+    const reel = document.getElementById('reel');
+    const meter = document.getElementById('loveMeter');
+    let canScroll = false;
+    let currentLevel = 0;
+
+    document.body.addEventListener('click',()=>bgm.play().catch(()=>{}),{once:true});
+
+    // SCROLL LOCKING
+    reel.addEventListener('scroll', (e) => {
+        if (!canScroll) {
+            reel.scrollTop = currentLevel * window.innerHeight;
+        }
+    });
+
+    function unlockNext() {
+        canScroll = true;
+        currentLevel++;
+        reel.style.overflowY = "scroll";
+        reel.scrollTo({ top: currentLevel * window.innerHeight, behavior: 'smooth' });
+        
+        setTimeout(() => {
+            reel.style.overflowY = "hidden";
+            canScroll = false;
+        }, 1200);
+    }
+
+    // TYPEWRITER
+    const intro = "PARLIN TO VADODARA: FLIGHT RF-2026. STATUS: BOARDING. ✈️";
+    let cIdx = 0; function type() { if(cIdx < intro.length){ document.getElementById("typewriter").innerHTML += intro.charAt(cIdx++); setTimeout(type, 100); } }
+    window.onload = type;
+
+    // DUAL CLOCKS
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('myTime').innerText = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', timeZone:'America/New_York'});
+        document.getElementById('herTime').innerText = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata'});
+    }, 1000);
+
+    // MAP FLIGHT
+    function startFlight() {
+        const p = document.getElementById('plane-icon');
+        const s = document.getElementById('wish-status');
+        document.getElementById('start-btn').style.display = 'none';
+        p.style.display = 'block';
+        s.innerText = "Traveling across the world... ✈️";
+        
+        p.animate([{ offsetDistance: "0%" }, { offsetDistance: "100%" }], { duration: 4500, easing: 'ease-in-out', fill: 'forwards' });
+        
+        setTimeout(() => { 
+            s.innerText = "Wishes Delivered to Vadodara! 💖"; 
+            updateMeter(15); 
+            setTimeout(unlockNext, 1200); 
+        }, 4500);
+    }
+
+    // QUIZ
+    const qData = [{q:"Which platform did we first speak on?", a:["Instagram","WhatsApp"], c:1}, {q:"My favorite memory?", a:["Video Calls","Everything"], c:1}];
+    let curQ = 0;
+    function loadQuiz() {
+        const d = qData[curQ]; document.getElementById('qText').innerText = d.q;
+        document.getElementById('quizOptions').innerHTML = d.a.map((opt, i) => `<button class="btn-opt" onclick="checkQuiz(${i})">${opt}</button>`).join('');
+    }
+    function checkQuiz(i) {
+        if(i === qData[curQ].c) { 
+            curQ++; 
+            if(curQ < qData.length) { reveal("Correct! ❤️", false); loadQuiz(); } 
+            else { updateMeter(30); reveal("Quiz Complete! Unlocking next level... ✈️", true); } 
+        } else { alert("Not quite! Try to remember..."); }
+    }
+    loadQuiz();
+
+    // SCRATCH CARDS (ROBUST VERSION)
+    let scratchCounts = [0, 0, 0];
+    document.querySelectorAll('.scratch-canvas').forEach((cvs, idx) => {
+        const ctx = cvs.getContext('2d'); ctx.fillStyle = '#888'; ctx.fillRect(0,0,130,130); ctx.globalCompositeOperation = 'destination-out';
+        
+        const scratchFunc = (e) => {
+            const r = cvs.getBoundingClientRect();
+            const x = (e.clientX || e.touches?.[0].clientX) - r.left;
+            const y = (e.clientY || e.touches?.[0].clientY) - r.top;
+            ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI*2); ctx.fill();
+            
+            scratchCounts[idx]++;
+            // After enough scratching, show the button
+            if (scratchCounts.every(count => count > 50)) {
+                document.getElementById('scratch-unlock-btn').style.display = 'block';
+                document.getElementById('scratch-hint').style.display = 'none';
+            }
+        };
+        cvs.addEventListener('mousemove', scratchFunc);
+        cvs.addEventListener('touchmove', scratchFunc);
+    });
+
+    // TIC TAC TOE
+    let bt = ["","","","","","","","",""];
+    function playTTT(i) {
+        if(bt[i]==="") {
+            bt[i]="X"; document.getElementsByClassName('cell')[i].innerText="X";
+            if(checkW("X")) { updateMeter(75); reveal("You won! You've earned the next level. ❤️", true); return; }
+            if(bt.filter(v=>v==="").length === 0) { alert("Tie! Resetting..."); resetTTT(); return; }
+            setTimeout(() => { 
+                let e = bt.map((v,idx)=>v===""?idx:null).filter(v=>v!==null); 
+                if(e.length){ 
+                    let m=e[Math.floor(Math.random()*e.length)]; 
+                    bt[m]="O"; document.getElementsByClassName('cell')[m].innerText="O"; 
+                    if(checkW("O")) { alert("I won! Restarting..."); resetTTT(); }
+                } 
+            }, 300);
+        }
+    }
+    function resetTTT() {
+        bt = ["","","","","","","","",""];
+        Array.from(document.getElementsByClassName('cell')).forEach(c => c.innerText = "");
+    }
+    function checkW(p) { return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(s => s.every(i => bt[i] === p)); }
+
+    // LOVE NOTES
+    const reasons = ["Your heart.", "The way you care.", "Your contagious laugh.", "Everything about you."];
+    function genReason() { document.getElementById('reasonDisplay').innerText = reasons[Math.floor(Math.random()*reasons.length)]; }
+
+    // HEART PATH
+    function hXY(t, s=12, oX=225, oY=210){ return { x: s*16*Math.pow(Math.sin(t),3)+oX, y: -s*(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))+oY }; }
+    let pathD = ""; for(let i=0; i<=6.28; i+=0.1){ let {x,y} = hXY(i); pathD += (i===0?"M":"L")+x+" "+y+" "; }
+    document.getElementById('heartPath').setAttribute("d", pathD);
+    for(let k=0; k<20; k++){
+        let {x,y} = hXY((k/19)*6.28); let s = document.createElement('div'); s.className = 'step'; s.style.left = (x-13)+'px'; s.style.top = (y-13)+'px'; s.innerText = k+1;
+        s.onclick = () => { 
+            reveal(`Memory ${k+1}: You make life beautiful.`, false); 
+            if(k===19) finishHeart(); 
+        };
+        document.getElementById('pathArea').appendChild(s);
+    }
+    function finishHeart() {
+        const hp = document.getElementById('heartPath');
+        hp.style.opacity = "1"; hp.style.fill = "rgba(255, 105, 180, 0.3)";
+        document.getElementById('heartInitials').style.opacity = "1";
+        document.querySelectorAll('.step').forEach(step => step.style.display = 'none');
+        updateMeter(90); setTimeout(unlockNext, 3000);
+    }
+
+    // HELPERS
+    let sn = false;
+    function reveal(m, s) { document.getElementById('modalMsg').innerText = m; document.getElementById('modal').style.display = 'flex'; sn = s; }
+    function closeModal() { document.getElementById('modal').style.display = 'none'; if(sn) unlockNext(); }
+    function updateMeter(v) { meter.style.width = v + '%'; }
+    function unwrap() { document.getElementById('gift').classList.add('unwrapped'); updateMeter(100); }
+</script>
+</body>
+</html>
