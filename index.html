@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <title>Parlin to Vadodara | R & F 💖</title>
 <style>
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -55,10 +56,39 @@
     .ttt-grid{display:grid; grid-template-columns:repeat(3, 75px); gap:8px; margin-top:15px;}
     .cell{width:75px; height:75px; background:rgba(255,255,255,0.1); border:1px solid #ff69b4; display:flex; align-items:center; justify-content:center; font-size:2rem; cursor:pointer; border-radius: 8px;}
 
+    @keyframes heartGlow {
+    0% {
+        filter: drop-shadow(0 0 8px rgba(255,105,180,0.6));
+    }
+    50% {
+        filter: drop-shadow(0 0 22px rgba(255,105,180,1));
+    }
+    100% {
+        filter: drop-shadow(0 0 8px rgba(255,105,180,0.6));
+    }
+}
+
+@keyframes heartPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
+
+.heart-glow {
+    animation: heartGlow 2.5s ease-in-out infinite;
+}
+
+.heart-pulse {
+    animation: heartPulse 3s ease-in-out infinite;
+}
+    
     /* HEART PATH */
     .path-line{ stroke:#ff69b4; stroke-width:3; fill: rgba(255, 105, 180, 0); filter:drop-shadow(0 0 10px #ff69b4); opacity:0; transition: opacity 2s, fill 2s; }
     .step{position:absolute; width:26px; height:26px; background:#ff69b4; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:10px; z-index: 5;}
     #heartInitials { position:absolute; font-size:3rem; color:#ff69b4; top:50%; left:50%; transform:translate(-50%,-50%); opacity:0; font-weight:bold; transition: opacity 2s; z-index: 10; }
+
+    /* PHOTO MODAL IMG */
+    .photo-modal-img { width: 100%; max-width: 300px; border-radius: 10px; border: 3px solid #ff69b4; margin-bottom: 15px; }
 
     /* GIFT */
     .gift-container { position: relative; width: 150px; height: 150px; cursor: pointer; }
@@ -85,9 +115,130 @@
         opacity: 0;
         transition: opacity 2s;
     }
+
+    #heartInitialsWrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    }
+
+    #heartInitials {
+    font-size: 3rem;
+    color: #ff69b4;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 2s;
+    white-space: nowrap; /* Keeps R & F on one line */
+    text-shadow: 0 0 20px #ff69b4;
+    text-align: center;
+    margin: 0; 
+    line-height: 1; /* Prevents vertical offset */
+    }
+
+    #sky-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Great Vibes', cursive; /* Elegant cursive */
+    font-size: 6rem; /* Large enough to cover half the page */
+    color: #ff69b4;
+    text-shadow: 0 0 20px rgba(255, 105, 180, 0.8), 0 0 40px rgba(255, 105, 180, 0.4);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* PUZZLE STYLES */
+.pieces-bin {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    min-height: 100px;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* PUZZLE STYLES UPDATED */
+
+/* PUZZLE CONTAINER UPDATED */
+.puzzle-container {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(3, 80px);
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border: 2px solid #ff69b4;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    position: relative;
+    /* transition: gap, padding, and transform for the expansion effect */
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+}
+
+/* Expansion state */
+.puzzle-container.completed {
+    gap: 0;
+    padding: 0;
+    border: 4px solid #fff;
+    transform: scale(1.2); /* Expands the photo to be 20% larger */
+    box-shadow: 0 0 30px rgba(255, 105, 180, 0.8); /* Adds a glowing aura */
+    z-index: 2000; /* Ensures it sits above other elements */
+}
+
+.puzzle-slot {
+    width: 80px;
+    height: 80px;
+    border: 1px dashed rgba(255, 105, 180, 0.3);
+    transition: border 0.5s;
+}
+
+.puzzle-container.completed .puzzle-slot {
+    border: none;
+}
+
+.puzzle-piece {
+    width: 80px;
+    height: 80px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-size: 240px 240px;
+    position: absolute;
+    transition: border 0.5s;
+}
+
+.puzzle-container.completed .puzzle-piece {
+    border: none;
+}
+
+
+
+
+#heartInitials.heart-pulse {
+    text-shadow: 0 0 20px #ff69b4, 0 0 40px rgba(255,105,180,0.6);
+}
+
+
 </style>
 </head>
+
 <body>
+
+    <audio id="bgm" loop preload="auto">
+    <source src="https://github.com/ruddy220497/Test/raw/refs/heads/main/song.mp3" type="audio/mpeg">
+</audio>
+
 <div class="stars"></div>
 <audio id="bgm" loop><source src="bollywood-love.mp3" type="audio/mpeg"></audio>
 
@@ -118,7 +269,7 @@
 </div>
 
 <div class="reel" id="reel">
-    <section class="frame"><div class="text" id="typewriter"></div><button class="btn-opt" style="width:180px" onclick="unlockNext()">Enter the Quest</button></section>
+    <section class="frame"><div class="text" id="typewriter"></div><button class="btn-opt" style="width:180px" onclick="startQuest()">Enter the Quest</button></section>
 
     <section class="frame">
         <div class="text">Before we begin…</div>
@@ -129,19 +280,28 @@
         </div>
     </section>
 
-    <section class="frame">
-        <div class="text">Connecting Our Worlds 🌍</div>
-        <div style="position: relative; width: 100%; max-width: 700px;">
-            <div id="plane-icon">✈️</div>
-            <svg class="map-svg" viewBox="0 0 800 400">
-                <path id="flight-path" class="path-dotted" d="M100,200 C150,50 550,50 700,250" />
-                <circle cx="100" cy="200" r="5" fill="#ff69b4" />
-                <circle cx="700" cy="250" r="5" fill="#ff69b4" />
-            </svg>
-        </div>
-        <div id="wish-status" style="margin-top:10px; font-style:italic; color:#ff69b4;">Parlin to Vadodara...</div>
-        <button id="start-btn" class="btn-opt" style="width:220px; margin-top:20px;" onclick="startFlight()">Send Birthday Wishes</button>
-    </section>
+<section class="frame">
+    <div class="text">Connecting Our Worlds 🌍</div>
+    <div style="position: relative; width: 100%; max-width: 800px; height: 500px;">
+        <div id="plane-icon" style="position: absolute; z-index: 20; font-size: 24px; display: none;">✈️</div>
+        
+        <svg class="map-svg" viewBox="0 0 800 300" style="width: 100%; height: auto; overflow: visible;">
+            <path id="flight-path" class="path-dotted" 
+                  d="M100,200 C150,50 550,50 700,250" 
+                  fill="none" stroke="rgba(255,105,180,0.3)" stroke-width="2" stroke-dasharray="8,8" />
+            
+            <circle cx="100" cy="200" r="6" fill="#ff69b4" class="heart-glow" />
+            <text x="70" y="230" fill="#ff69b4" font-size="14">Parlin</text>
+            
+            <circle cx="700" cy="250" r="6" fill="#ff69b4" class="heart-glow" />
+            <text x="670" y="280" fill="#ff69b4" font-size="14">Vadodara</text>
+        </svg>
+
+        <div id="sky-message">Happy Birthday Love</div>
+    </div>
+    <div id="wish-status" style="margin-top:10px; font-style:italic; color:#ff69b4;">Parlin to Vadodara...</div>
+    <button id="start-btn" class="btn-opt" style="width:220px; margin-top:20px;" onclick="startFlight()">Send Birthday Wishes</button>
+</section>
 
     <section class="frame">
         <div class="text">The Memory Quiz 🧠</div>
@@ -192,11 +352,23 @@
         </div>
     </section>
 
-    <section class="frame">
-        <div class="text">Closing the distance 🌍</div>
-        <p id="distanceText" style="font-size:1.5rem;margin-top:10px">12,000 km apart</p>
-        <button class="btn-opt" onclick="shrinkDistance()">Bring us closer</button>
-    </section>
+<section class="frame">
+    <div class="text">Piece Us Together 🧩</div>
+    <div class="puzzle-container" id="puzzleBoard">
+        <div class="puzzle-slot" data-idx="0"></div>
+        <div class="puzzle-slot" data-idx="1"></div>
+        <div class="puzzle-slot" data-idx="2"></div>
+        <div class="puzzle-slot" data-idx="3"></div>
+        <div class="puzzle-slot" data-idx="4"></div>
+        <div class="puzzle-slot" data-idx="5"></div>
+        <div class="puzzle-slot" data-idx="6"></div>
+        <div class="puzzle-slot" data-idx="7"></div>
+        <div class="puzzle-slot" data-idx="8"></div>
+    </div>
+    <div class="pieces-bin" id="piecesBin"></div>
+    <p id="puzzleHint" style="font-size: 0.8rem; color: #ff69b4; margin-top: 10px;">Drag the pieces to the board!</p>
+    <button id="puzzleNext" class="btn-opt" style="width: 180px; display: none;" onclick="unlockNext()">Next</button>
+</section>
 
     <section class="frame">
         <div class="text">Red Flag or Green Flag 🚩💚</div>
@@ -237,9 +409,13 @@
     </section>
 
     <section class="frame" id="pathFrame">
+        <div class="text">Memory Lane 🤍</div>
+        <p style="font-size: 0.9rem; margin-bottom: 10px; opacity: 0.8;">Click all 20 points to see our photos!</p>
         <div id="pathArea" style="position:relative; width:450px; height:450px;">
             <svg width="450" height="450"><path id="heartPath" class="path-line"></path></svg>
-            <div id="heartInitials">R & F</div>
+            <div id="heartInitialsWrapper">
+    <div id="heartInitials">R & F</div>
+</div>
         </div>
     </section>
 
@@ -262,7 +438,13 @@
     <button class="btn-opt" style="width: 200px; margin-top: 50px;" onclick="location.reload()">Replay Quest 🔄</button>
 </div>
 
-<div class="modal" id="modal"><div style="background:#0b1023; padding:40px; border-radius:20px; border:2px solid #ff69b4; text-align:center;"><p id="modalMsg"></p><br><button onclick="closeModal()" style="color:#ff69b4; background:none; border:none; cursor:pointer; font-weight:bold;">Next</button></div></div>
+<div class="modal" id="modal">
+    <div id="modalBox" style="background:#0b1023; padding:40px; border-radius:20px; border:2px solid #ff69b4; text-align:center;">
+        <div id="photoContent"></div>
+        <p id="modalMsg"></p><br>
+        <button id="modalBtn" onclick="closeModal()" style="color:#ff69b4; background:none; border:none; cursor:pointer; font-weight:bold;">Close</button>
+    </div>
+</div>
 
 <script>
     const bgm = document.getElementById('bgm');
@@ -272,7 +454,31 @@
     let currentLevel = 0;
     let lastTrailTime = 0;
 
-    // SLOW ELEPHANT TRAIL
+    // Photo Array
+    const heartPhotos = [
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+1", msg: "Memory 1: Our first chat." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+2", msg: "Memory 2: A silly joke." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+3", msg: "Memory 3: You looked so beautiful." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+4", msg: "Memory 4: Thinking of you." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+5", msg: "Memory 5: Parlin ✈️ Vadodara." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+6", msg: "Memory 6: Counting days." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+7", msg: "Memory 7: Your laugh." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+8", msg: "Memory 8: Late night calls." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+9", msg: "Memory 9: Missing you." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+10", msg: "Memory 10: Halfway through!" },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+11", msg: "Memory 11: A special moment." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+12", msg: "Memory 12: Shared dreams." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+13", msg: "Memory 13: Your kind soul." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+14", msg: "Memory 14: Distance is just a number." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+15", msg: "Memory 15: Elephant hugs." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+16", msg: "Memory 16: Almost there." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+17", msg: "Memory 17: My whole world." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+18", msg: "Memory 18: Love you more." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+19", msg: "Memory 19: One more to go." },
+        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+20", msg: "Memory 20: Happy Birthday, Frooti! ❤️" }
+    ];
+
+    // Trail
     document.addEventListener('mousemove', (e) => {
         const now = Date.now();
         if (now - lastTrailTime < 60) return;
@@ -294,14 +500,16 @@
         }
     });
 
-    // UPDATED UNLOCK LOGIC WITH PASSPORT STAMPS
+
+
+    // Unlock Next Logic
     function unlockNext() {
         canScroll = true;
-        currentLevel++;
-        // Apply Stamp
+        // Fix: Update stamp based on level being unlocked
         const stamp = document.getElementById(`stamp-${currentLevel}`);
         if(stamp) stamp.classList.add('unlocked');
-
+        
+        currentLevel++;
         reel.style.overflowY = "scroll";
         reel.scrollTo({ top: currentLevel * window.innerHeight, behavior: 'smooth' });
         
@@ -311,32 +519,80 @@
         }, 1200);
     }
 
+    function startQuest() {
+    const music = document.getElementById('bgm');
+    
+    // Force volume to 100% just in case
+    music.volume = 1.0; 
+
+    // Trigger play
+    const playPromise = music.play();
+
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log("Playback started!");
+        }).catch(error => {
+            console.log("Playback failed: ", error);
+            // Fallback: alert the user they need to click once more
+            alert("Please click 'OK' to start the music!");
+            music.play();
+        });
+    }
+
+    // This moves to the next slide regardless of audio success
+    unlockNext();
+}
+
     // TYPEWRITER
     const intro = "PARLIN TO VADODARA: FLIGHT RF-2026. STATUS: BOARDING. ✈️";
     let cIdx = 0; function type() { if(cIdx < intro.length){ document.getElementById("typewriter").innerHTML += intro.charAt(cIdx++); setTimeout(type, 100); } }
     window.onload = type;
 
-    // DUAL CLOCKS
+    // CLOCKS
     setInterval(() => {
         const now = new Date();
         document.getElementById('myTime').innerText = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', timeZone:'America/New_York'});
         document.getElementById('herTime').innerText = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata'});
     }, 1000);
 
-    // MAP FLIGHT
-    function startFlight() {
-        const p = document.getElementById('plane-icon');
-        const s = document.getElementById('wish-status');
-        document.getElementById('start-btn').style.display = 'none';
-        p.style.display = 'block';
-        s.innerText = "Traveling across the world... ✈️";
-        p.animate([{ offsetDistance: "0%" }, { offsetDistance: "100%" }], { duration: 4500, easing: 'ease-in-out', fill: 'forwards' });
-        setTimeout(() => { 
-            s.innerText = "Wishes Delivered to Vadodara! 💖"; 
-            updateMeter(15); 
-            setTimeout(unlockNext, 1200); 
-        }, 4500);
-    }
+    // FLIGHT
+
+    // Updated Flight Animation
+function startFlight() {
+    const p = document.getElementById('plane-icon');
+    const s = document.getElementById('wish-status');
+    const msgDiv = document.getElementById('sky-message');
+    const path = document.getElementById('flight-path');
+    
+    document.getElementById('start-btn').style.display = 'none';
+    p.style.display = 'block';
+    
+    // Set the plane to follow the arc path
+    p.style.offsetPath = `path('${path.getAttribute('d')}')`;
+    
+    s.innerText = "Sending love across the ocean... ✈️";
+    
+    // 1. Move the plane along the path
+    const planeAnim = p.animate([
+        { offsetDistance: "0%" },
+        { offsetDistance: "100%" }
+    ], { 
+        duration: 4000, 
+        easing: 'ease-in-out', 
+        fill: 'forwards' 
+    });
+
+    // 2. Reveal the plain text once the plane finishes its journey
+    planeAnim.onfinish = () => {
+        s.innerText = "Arrived in Vadodara! 💖";
+        msgDiv.style.opacity = "1"; // Fades the text in
+        
+        updateMeter(15); 
+        setTimeout(unlockNext, 2500); 
+    };
+}
+
+
 
     // QUIZ
     const qData = [{q:"Which platform did we first speak on?", a:["Instagram","WhatsApp"], c:1}, {q:"My favorite memory?", a:["Video Calls","Everything"], c:1}];
@@ -354,26 +610,56 @@
     }
     loadQuiz();
 
-    // SCRATCH CARDS
-    let scratchCounts = [0, 0, 0];
-    document.querySelectorAll('.scratch-canvas').forEach((cvs, idx) => {
-        const ctx = cvs.getContext('2d'); ctx.fillStyle = '#888'; ctx.fillRect(0,0,130,130); ctx.globalCompositeOperation = 'destination-out';
-        const scratchFunc = (e) => {
-            const r = cvs.getBoundingClientRect();
-            const x = (e.clientX || e.touches?.[0].clientX) - r.left;
-            const y = (e.clientY || e.touches?.[0].clientY) - r.top;
-            ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI*2); ctx.fill();
-            scratchCounts[idx]++;
-            if (scratchCounts.every(count => count > 50)) {
-                document.getElementById('scratch-unlock-btn').style.display = 'block';
-                document.getElementById('scratch-hint').style.display = 'none';
-            }
-        };
-        cvs.addEventListener('mousemove', scratchFunc);
-        cvs.addEventListener('touchmove', scratchFunc);
-    });
+    function n() {
+    const input = document.getElementById("nameInput");
+    return input && input.value.trim() ? input.value.trim() : "you";
+}
 
-    // TIC TAC TOE
+    // SCRATCH
+    // SCRATCH (FIXED)
+let scratches = 0;
+
+document.querySelectorAll('.scratch-canvas').forEach((cvs) => {
+    const ctx = cvs.getContext('2d');
+    ctx.fillStyle = '#888';
+    ctx.fillRect(0,0,130,130);
+    ctx.globalCompositeOperation = 'destination-out';
+
+    let scratched = false;
+
+    const scratchFunc = (e) => {
+        if(!scratched){
+            scratched = true;
+            scratches++;
+
+            if(scratches === 3){
+    setTimeout(() => {
+        document.querySelectorAll('.scratch-canvas').forEach(c => {
+            c.style.transition = "opacity 1.2s";
+            c.style.opacity = 0.15;
+        });
+
+        document.getElementById('scratch-hint').innerText =
+            `Every little message was for you, ${n()} 💌`;
+
+        document.getElementById('scratch-unlock-btn').style.display = 'block';
+    }, 800);
+}
+        }
+
+        const r = cvs.getBoundingClientRect();
+        const x = (e.clientX || e.touches?.[0].clientX) - r.left;
+        const y = (e.clientY || e.touches?.[0].clientY) - r.top;
+        ctx.beginPath();
+        ctx.arc(x, y, 18, 0, Math.PI*2);
+        ctx.fill();
+    };
+
+    cvs.addEventListener('mousemove', scratchFunc);
+    cvs.addEventListener('touchmove', scratchFunc);
+});
+
+    // TTT
     let bt = ["","","","","","","","",""];
     function playTTT(i) {
         if(bt[i]==="") {
@@ -390,65 +676,230 @@
             }, 300);
         }
     }
-    function resetTTT() {
-        bt = ["","","","","","","","",""];
-        Array.from(document.getElementsByClassName('cell')).forEach(c => c.innerText = "");
-    }
+    function resetTTT() { bt = ["","","","","","","","",""]; Array.from(document.getElementsByClassName('cell')).forEach(c => c.innerText = ""); }
     function checkW(p) { return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(s => s.every(i => bt[i] === p)); }
 
-    // LOVE NOTES
-    const reasons = ["Your heart.", "The way you care.", "Your contagious laugh.", "Everything about you.", "Your Kind Soul", "Inner child in that lives in you"];
-    function genReason() { document.getElementById('reasonDisplay').innerText = reasons[Math.floor(Math.random()*reasons.length)]; }
+    
+    // PUZZLE LOGIC
+const imageUrl = "https://raw.githubusercontent.com/ruddy220497/Test/refs/heads/main/VIP00217.jpg"; // Replace with your photo
+const piecesBin = document.getElementById('piecesBin');
+const boardSlots = document.querySelectorAll('.puzzle-slot');
+let matchedPieces = 0;
 
+function initPuzzle() {
+    const indices = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    const shuffled = indices.sort(() => Math.random() - 0.5);
+
+    shuffled.forEach(i => {
+        const piece = document.createElement('div');
+        piece.className = 'puzzle-piece';
+        piece.style.backgroundImage = `url(${imageUrl})`;
+        
+        // Calculate background position for the 3x3 grid
+        const x = (i % 3) * 80;
+        const y = Math.floor(i / 3) * 80;
+        piece.style.backgroundPosition = `-${x}px -${y}px`;
+        piece.setAttribute('data-correct', i);
+        
+        // Add dragging listeners
+        piece.onmousedown = startDrag;
+        piece.ontouchstart = startDrag;
+        
+        piecesBin.appendChild(piece);
+    });
+}
+
+function startDrag(e) {
+    const piece = e.target;
+    const isTouch = e.type === 'touchstart';
+    const moveEvent = isTouch ? 'touchmove' : 'mousemove';
+    const upEvent = isTouch ? 'touchend' : 'mouseup';
+    
+    piece.style.zIndex = 1000;
+    
+    function move(ev) {
+        const x = (isTouch ? ev.touches[0].clientX : ev.clientX) - 40;
+        const y = (isTouch ? ev.touches[0].clientY : ev.clientY) - 40;
+        piece.style.left = x + 'px';
+        piece.style.top = y + 'px';
+        piece.style.position = 'fixed';
+    }
+
+    function drop(ev) {
+        document.removeEventListener(moveEvent, move);
+        document.removeEventListener(upEvent, drop);
+        
+        const clientX = isTouch ? ev.changedTouches[0].clientX : ev.clientX;
+        const clientY = isTouch ? ev.changedTouches[0].clientY : ev.clientY;
+        
+        piece.style.display = 'none';
+        const elementBelow = document.elementFromPoint(clientX, clientY);
+        piece.style.display = 'block';
+
+        if (elementBelow && elementBelow.classList.contains('puzzle-slot')) {
+            const slotIdx = elementBelow.getAttribute('data-idx');
+            const correctIdx = piece.getAttribute('data-correct');
+
+            if (slotIdx === correctIdx) {
+                // Snap to position
+                elementBelow.appendChild(piece);
+                piece.style.position = 'relative';
+                piece.style.left = '0';
+                piece.style.top = '0';
+                piece.style.cursor = 'default';
+                piece.onmousedown = null;
+                piece.ontouchstart = null;
+                matchedPieces++;
+
+                // Inside your drop function, where you check if matchedPieces === 9
+// Inside your drop function
+if (matchedPieces === 9) {
+    const board = document.getElementById('puzzleBoard');
+    
+    // This triggers the expansion and the removal of grid lines
+    board.classList.add('completed');
+    
+    document.getElementById('puzzleHint').innerText = "Look how perfect we are! ❤️";
+    
+    // Hide the pieces bin to keep the screen clean during expansion
+    document.getElementById('piecesBin').style.opacity = '0';
+
+    setTimeout(() => {
+        document.getElementById('puzzleNext').style.display = 'block';
+    }, 1000); // Wait for the expansion to finish
+    
+    updateMeter(75);
+}
+            }
+        }
+    }
+
+    document.addEventListener(moveEvent, move);
+    document.addEventListener(upEvent, drop);
+}
+
+// Call this inside window.onload
+initPuzzle();
+    
     // HEART PATH
-    function hXY(t, s=12, oX=225, oY=210){ return { x: s*16*Math.pow(Math.sin(t),3)+oX, y: -s*(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))+oY }; }
+    function hXY(t, s=14, oX=225, oY=210){ return { x: s*16*Math.pow(Math.sin(t),3)+oX, y: -s*(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))+oY }; }
     let pathD = ""; for(let i=0; i<=6.28; i+=0.1){ let {x,y} = hXY(i); pathD += (i===0?"M":"L")+x+" "+y+" "; }
     document.getElementById('heartPath').setAttribute("d", pathD);
-    for(let k=0; k<20; k++){
-        let {x,y} = hXY((k/19)*6.28); let s = document.createElement('div'); s.className = 'step'; s.style.left = (x-13)+'px'; s.style.top = (y-13)+'px'; s.innerText = k+1;
-        s.onclick = () => { 
-            reveal(`Memory ${k+1}: You make life beautiful.`, false); 
-            if(k===19) finishHeart(); 
-        };
-        document.getElementById('pathArea').appendChild(s);
-    }
-    function finishHeart() {
-        const hp = document.getElementById('heartPath');
-        hp.style.opacity = "1"; hp.style.fill = "rgba(255, 105, 180, 0.3)";
-        document.getElementById('heartInitials').style.opacity = "1";
-        document.querySelectorAll('.step').forEach(step => step.style.display = 'none');
-        updateMeter(90); setTimeout(unlockNext, 3000);
-    }
 
-    // MODAL
-    let sn = false;
-    function reveal(m, s) { document.getElementById('modalMsg').innerText = m; document.getElementById('modal').style.display = 'flex'; sn = s; }
-    function closeModal() { document.getElementById('modal').style.display = 'none'; if(sn) unlockNext(); }
-    function updateMeter(v) { meter.style.width = v + '%'; }
+
+
+    // Add this list of names
+    const dotNames = ["R", "U", "D", "U", "L", "O", "V", "E", "S", "F", "R", "O", "O", "T", "0"];
+
+    // Updated for exactly 15 dots with clean spacing
+let viewedPhotos = new Array(15).fill(false);
+let dotsFound = 0;
+
+for(let k=0; k<15; k++){
+    // 6.0 creates a gap at the top so dot 1 and 15 don't touch
+    let t = (k / 16) * 6.2; 
     
-    // UPDATED UNWRAP LOGIC WITH THE END SCREEN
-    function unwrap() { 
-        document.getElementById('gift').classList.add('unwrapped'); 
-        updateMeter(100); 
-        document.getElementById('stamp-14').classList.add('unlocked');
-        setTimeout(() => {
-            const end = document.getElementById('end-screen');
-            end.style.display = 'flex';
-            setTimeout(() => end.style.opacity = "1", 100);
-        }, 3000);
+    // Spacing adjustment for the bottom tip (around dots 7 and 8)
+    if(k > 7) t += 0.08;
+
+    let {x, y} = hXY(t); 
+    let s = document.createElement('div'); 
+    s.className = 'step'; 
+    s.style.left = (x - 13) + 'px'; 
+    s.style.top = (y - 13) + 'px'; 
+    s.innerText = dotNames[k]; 
+
+    s.onclick = () => { 
+        showHeartPhoto(k);
+        s.style.display = "none"; // Dot disappears when clicked
+        viewedPhotos[k] = true;
+        dotsFound++;
+        
+        if(dotsFound === 15) {
+            window.lastHeartClick = true; // Signals the finale
+        }
+    };
+    document.getElementById('pathArea').appendChild(s);
+}
+    
+    
+
+    function showHeartPhoto(idx) {
+        const photo = heartPhotos[idx];
+        document.getElementById('photoContent').innerHTML = `<img src="${photo.url}" class="photo-modal-img">`;
+        document.getElementById('modalMsg').innerText = photo.msg;
+        document.getElementById('modalBtn').onclick = closeModal; // Ensure it just closes
+        document.getElementById('modal').style.display = 'flex';
+        sn = false; // Prevent auto-scroll
     }
 
-    // MINI GAMES
+    function finishHeart() {
+    const hp = document.getElementById('heartPath');
+    const initials = document.getElementById('heartInitials');
+
+    // Reveal heart
+    hp.style.opacity = "1";
+    hp.style.fill = "rgba(255, 105, 180, 0.35)";
+
+    // Glow & pulse
+    hp.classList.add("heart-glow");
+    hp.classList.add("heart-pulse");
+
+    initials.style.opacity = "1";
+    initials.style.textShadow = "0 0 25px #ff69b4";
+    document.getElementById("heartInitials").classList.add("heart-pulse");
+
+    // Remove dots
+    document.querySelectorAll('.step').forEach(step => step.style.display = 'none');
+
+    updateMeter(90);
+
+    // Hold the moment, then continue
+    setTimeout(unlockNext, 3000);
+}
+
+    // MODAL HELPERS
+    let sn = false;
+    function reveal(m, s) { 
+        document.getElementById('photoContent').innerHTML = ""; 
+        document.getElementById('modalMsg').innerText = m; 
+        document.getElementById('modal').style.display = 'flex'; 
+        sn = s; 
+        document.getElementById('modalBtn').onclick = () => { 
+            document.getElementById('modal').style.display = 'none'; 
+            if(sn) unlockNext(); 
+        };
+    }
+    function closeModal() { 
+    document.getElementById('modal').style.display = 'none';
+
+    // ✅ If last heart memory was clicked, finish path properly
+    if (window.lastHeartClick) {
+        window.lastHeartClick = false;
+        setTimeout(finishHeart, 600);
+    }
+}
+    function updateMeter(v) { meter.style.width = v + '%'; }
+    function unwrap() { document.getElementById('gift').classList.add('unwrapped'); updateMeter(100); document.getElementById('stamp-14').classList.add('unlocked'); setTimeout(() => { const end = document.getElementById('end-screen'); end.style.display = 'flex'; setTimeout(() => end.style.opacity = "1", 100); }, 3000); }
+    function genReason() { const reasons = ["Your heart.", "The way you care.", "Your contagious laugh.", "Everything about you.", "Your Kind Soul", "Inner child that lives in you"]; document.getElementById('reasonDisplay').innerText = reasons[Math.floor(Math.random()*reasons.length)]; }
     function finishSentence(){ document.getElementById("sentenceResult").innerText = "That’s when I fall for you all over again."; updateMeter(5); setTimeout(unlockNext, 1200); }
-    let dist = 12000;
-    function shrinkDistance(){ dist -= 4000; document.getElementById("distanceText").innerText = dist <= 0 ? "0 km. I’m right here ❤️" : dist + " km apart"; updateMeter(5); if(dist <= 0) setTimeout(unlockNext, 1200); }
+    let dist = 12000; function shrinkDistance(){ dist -= 4000; document.getElementById("distanceText").innerText = dist <= 0 ? "0 km. I’m right here ❤️" : dist + " km apart"; updateMeter(5); if(dist <= 0) setTimeout(unlockNext, 1200); }
     function flagChoice(){ document.getElementById("flagResult").innerText = "Correct. I love everything about you."; updateMeter(5); setTimeout(unlockNext, 1200); }
     function decodeEmoji(){ document.getElementById("emojiResult").innerText = "No matter the distance, I just want to hold you."; updateMeter(5); setTimeout(unlockNext, 1200); }
     function saveDate(){ document.getElementById("dateResult").innerText = "Saved. We’re doing this soon 💖"; updateMeter(10); setTimeout(unlockNext, 1200); }
+    function saveName(){ unlockNext(); }
 
-    // NAME PERSONALIZATION
-    let herName = localStorage.getItem("herName") || "";
-    function saveName(){ const input = document.getElementById("nameInput").value.trim(); if(input.length){ herName = input; localStorage.setItem("herName", herName); } unlockNext(); }
+/* MOBILE POLISH */
+document.addEventListener("touchmove", e => {
+    if(!canScroll) e.preventDefault();
+}, { passive:false });
+
+document.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("touchstart", () => btn.classList.add("active"));
+    btn.addEventListener("touchend", () => btn.classList.remove("active"));
+});
+
+
 
 </script>
 </body>
