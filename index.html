@@ -390,6 +390,7 @@
     <div id="stamp-14" class="stamp" title="Arrival">🏁</div>
 </div>
 
+<div class="meter-container"><div class="meter-fill" id="loveMeter"></div></div>*/
 <div class="clock-container">
     <div style="color:#ff69b4; font-weight:bold; margin-bottom:4px;">Parlin ✈️ Vadodara</div>
     <div>Parlin (EST): <span id="myTime">00:00</span></div>
@@ -1678,27 +1679,6 @@ document.addEventListener("DOMContentLoaded", () => {
 }
     function updateMeter(v) { meter.style.width = v + '%'; }
 
-    function handleGiftClick(isSecretAttempt) {
-    const passInput = document.getElementById('giftPassword').value.trim().toLowerCase();
-    const correctPass = "1234?"; // Your secret code
-
-    if (isSecretAttempt && passInput === correctPass) {
-        // Path A: The Private Letter
-        alert("Access Granted. Opening your letter now... ❤️");
-        document.getElementById('password-area').style.display = "none";
-        unwrap(true); 
-    } else if (isSecretAttempt && passInput !== correctPass) {
-        // Path B: Wrong Password -> Move forward anyway but hide letter
-        alert("That code is just for Frooti! But you can still finish the journey. ✨");
-        document.getElementById('password-area').style.display = "none";
-        unwrap(false);
-    } else {
-        // Path C: Guest Mode
-        document.getElementById('password-area').style.display = "none";
-        unwrap(false);
-    }
-}
-
 function handleGiftClick(isSecretAttempt) {
     // .replace(/\s+/g, ' ') ensures multiple spaces count as one
     const passInput = document.getElementById('giftPassword').value.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -1715,7 +1695,7 @@ function handleGiftClick(isSecretAttempt) {
         unwrap(false); 
     } else {
         // FAIL: Wrong password or Guest Mode
-        alert("That code is just for Frooti! But you can still finish the journey. ✨");
+        alert("That letter is just for Frooti! But you can still finish the journey. ✨");
         document.getElementById('password-area').style.display = "none";
         unwrap(false);
     }
