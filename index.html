@@ -39,10 +39,11 @@
     .text{max-width:800px; font-size:2rem; line-height:1.5; margin-bottom:20px; text-shadow: 0 0 10px #ff69b4;}
 
     /* MAP & FLIGHT */
+    /*
     .map-svg { width: 100%; max-width: 700px; height: auto; overflow: visible; }
     .path-dotted { stroke: rgba(255,105,180,0.4); stroke-width: 2; fill: none; stroke-dasharray: 8; }
     #plane-icon { font-size: 24px; offset-path: path("M100,200 C150,50 550,50 700,250"); offset-rotate: auto; position: absolute; display: none; z-index: 10; }
-
+*/
     /* GAME UI */
     .box{background:rgba(255,255,255,0.08); backdrop-filter:blur(15px); border:1px solid rgba(255,255,255,0.2); padding:25px; border-radius:20px; width:100%; max-width:450px;}
     .btn-opt{display:block; width:100%; padding:12px; margin:8px 0; background:transparent; border:1px solid #ff69b4; color:#fff; border-radius:30px; cursor:pointer; font-family: inherit; transition: 0.3s;}
@@ -222,7 +223,63 @@
     border: none;
 }
 
+@keyframes paperDrop {
+    0% {
+        opacity: 0;
+        transform: translateY(-120px);
+    }
+    70% {
+        transform: translateY(15px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
+/* Initial hidden state */
+.sticky {
+    opacity: 0;
+}
+
+/* Animate only when activated */
+.sticky.drop {
+    animation: paperDrop 0.8s ease-out forwards;
+}
+
+.sticky-note {
+    width: 180px;
+    min-height: 180px;
+    padding: 15px;
+    background: #fff8a6;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    font-family: 'Comic Sans MS';
+    word-wrap: break-word;
+    animation: paperDrop 0.8s ease-out forwards;
+    opacity: 0; /* start hidden */
+
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    border-radius: 2px;
+}
+
+.sticky-note.revealed {
+    transform: rotate(0deg) scale(1.05);
+    font-family: 'Courier New', Courier, monospace, cursive;
+    font-size: fit;
+    background: #fff !important;
+    color: #080fe3 !important;
+}
 
 
 #heartInitials.heart-pulse {
@@ -230,20 +287,92 @@
 }
 
 
+.mini-note {
+    aspect-ratio: 1 / 1;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    line-height: 1.3;
+}
+
+.mini-note:hover {
+    transform: scale(1.05) rotate(2deg);
+}
+
+.mini-note.popped {
+    transform: scale(0.9) rotate(-2deg);
+    opacity: 0.8;
+}
+
+.fan-container {
+    position: relative;
+    width: 200px;
+    height: 250px;
+    margin: 40px auto;
+}
+
+.fan-card {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: var(--bg);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.2rem;
+    transition: transform 0.5s ease, z-index 0s;
+    /* Spreads them out slightly by default */
+    transform: rotate(calc(var(--i) * 5deg - 5deg)); 
+    cursor: pointer;
+}
+
+/* When the container is hovered or tapped, the cards "fan out" */
+.fan-container:hover .fan-card {
+    transform: rotate(calc(var(--i) * 20deg - 20deg)) translateX(calc(var(--i) * 30px - 30px));
+}
+
+.fan-card:hover {
+    z-index: 50;
+    transform: scale(1.1) translateY(-20px) !important;
+}
+
+#emojiOptions .btn-opt {
+    font-size: 0.9rem;
+    text-transform: none;
+    border-style: dashed;
+}
+#emojiOptions .btn-opt:active {
+    background: #ff69b4;
+    transform: scale(0.95);
+}
+
 </style>
 </head>
 
 <body>
 
     <audio id="bgm" loop preload="auto">
-    <source src="https://github.com/ruddy220497/Test/raw/refs/heads/main/song.mp3" type="audio/mpeg">
+    <source src="https://github.com/ruddy220497/Birthday/raw/refs/heads/main/song.mp3" type="audio/mpeg">
 </audio>
 
 <div class="stars"></div>
 <audio id="bgm" loop><source src="bollywood-love.mp3" type="audio/mpeg"></audio>
 
 <div id="passport-container">
-    <div class="passport-label">FROOTI'S TRAVELS</div>
+    <div class="passport-label">${n()}!'S TRAVELS</div>
     <div id="stamp-0" class="stamp unlocked" title="Departure">🛫</div>
     <div id="stamp-1" class="stamp" title="Check-in">💖</div>
     <div id="stamp-2" class="stamp" title="Flight">✈️</div>
@@ -280,28 +409,67 @@
         </div>
     </section>
 
-<section class="frame">
-    <div class="text">Connecting Our Worlds 🌍</div>
-    <div style="position: relative; width: 100%; max-width: 800px; height: 500px;">
-        <div id="plane-icon" style="position: absolute; z-index: 20; font-size: 24px; display: none;">✈️</div>
-        
-        <svg class="map-svg" viewBox="0 0 800 300" style="width: 100%; height: auto; overflow: visible;">
-            <path id="flight-path" class="path-dotted" 
-                  d="M100,200 C150,50 550,50 700,250" 
-                  fill="none" stroke="rgba(255,105,180,0.3)" stroke-width="2" stroke-dasharray="8,8" />
-            
-            <circle cx="100" cy="200" r="6" fill="#ff69b4" class="heart-glow" />
-            <text x="70" y="230" fill="#ff69b4" font-size="14">Parlin</text>
-            
-            <circle cx="700" cy="250" r="6" fill="#ff69b4" class="heart-glow" />
-            <text x="670" y="280" fill="#ff69b4" font-size="14">Vadodara</text>
-        </svg>
 
-        <div id="sky-message">Happy Birthday Love</div>
+<section class="frame">
+    <div class="text">Flight: <span style="color:#ff69b4; font-family:'Georgia';">Frooti o'clock</span> 🎀💎</div>
+    
+    <div id="flight-game-area" style="position: relative; width: 100%; max-width: 600px; height: 350px; margin: 0 auto; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid #ff69b4; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+        
+        <div id="flight-assets" style="width: 100%; height: 100%; position: relative;">
+            <div style="position: absolute; left: 10%; top: 50%; transform: translateY(-50%); text-align: center;">
+                <div style="font-size: 3rem;">🇺🇸</div>
+                <div style="font-size: 0.8rem; color: #ff69b4; font-weight: bold;">Parlin, USA</div>
+            </div>
+
+            <div style="position: absolute; right: 10%; top: 50%; transform: translateY(-50%); text-align: center;">
+                <div style="font-size: 3rem;">🇮🇳</div>
+                <div style="font-size: 0.8rem; color: #ff69b4; font-weight: bold;">Vadodara, India</div>
+            </div>
+
+            <svg style="position: absolute; inset: 0; pointer-events: none;">
+                <path id="flight-path" d="M100,175 C150,75 450,75 500,175" fill="none" stroke="transparent" />
+            </svg>
+
+            <div id="interactive-plane" style="position: absolute; font-size: 35px; offset-path: path('M100,175 C150,75 450,75 500,175'); offset-rotate: auto; top:0; left:0;">✈️</div>
+        </div>
+
+        <div id="arrival-photo" style="display: none; opacity: 0; transition: 1.5s; z-index: 25; width: 100%; height: 100%;">
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%;">
+        
+        <img src="https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/Flight%20Photo.jpg" style="max-width: 80%; max-height: 60%; border-radius: 15px; border: 3px solid #ff69b4; box-shadow: 0 0 30px rgba(255, 105, 184, 0.7); object-fit: contain;">
+        
+        <div style="font-family: 'Great Vibes', cursive; font-size: 3.0rem; color: #ff69b4; margin-top: 20px; text-shadow: 0 0 15px rgba(255, 105, 184, 0.8); white-space: nowrap;">
+            Can't wait to move from virtual to real 🤭
+        </div>
+        
     </div>
-    <div id="wish-status" style="margin-top:10px; font-style:italic; color:#ff69b4;">Parlin to Vadodara...</div>
-    <button id="start-btn" class="btn-opt" style="width:220px; margin-top:20px;" onclick="startFlight()">Send Birthday Wishes</button>
+</div>
+    </div>
+
+    <div id="flight-status" style="margin: 20px 0; color: #ff69b4; font-weight: bold;">Press to start the journey! 🛫</div>
+    <button id="boost-btn" class="btn-opt" style="width: 240px;" onclick="boostPlane()">Tap to Power the airplane 🚀</button>
 </section>
+
+
+<section class="frame" id="reasonsFrame" style="background: #1a1a2e; padding: 40px 10px;">
+    <div class="text" style="font-size: 1.8rem; margin-bottom: 30px;">Things I love about you ✍️</div>
+    
+    <div id="sticky-wall" style="display: flex;flex-wrap: wrap;justify-content: center; gap: 15px; max-width: fit-content; margin: 0 auto;">
+        <div class="sticky-note" onclick="revealNote(this, 'Your Kind & Pure Soul! ❣️')" style="background: #ff7eb9; transform: rotate(-2deg);">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'The way you make me smile! ❣️')" style="background: #ffea00; transform: rotate(3deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'How honest you are! ❣️')" style="background: #7afcff; transform: rotate(-1deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'Your contagious laugh! ❣️')" style="background: #a9ff68; transform: rotate(2deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'How incredibly you care about me! ❣️')" style="background: #8668ff; transform: rotate(-2deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'How unconditionally you trust me! ❣️')" style="background: #c805bb; transform: rotate(3deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'The way you look at me! ❣️')" style="background: #08d4df; transform: rotate(-1deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'The way you demand to be pampered! ❣️')" style="background: #030100; transform: rotate(2deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'You are beautiful inside out! ❣️')" style="background: #a9ff68; transform: rotate(-2deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'The list is endless, for now let us move to the next section! ❣️')" style="background: #ffffff; transform: rotate(3deg); color: #333;">?</div>
+    </div>
+
+    <button id="reasonsNextBtn" class="btn-opt" style="display:none; margin-top: 30px; width: 200px;" onclick="unlockNext()">Continue Journey</button>
+</section>
+
 
     <section class="frame">
         <div class="text">The Memory Quiz 🧠</div>
@@ -311,14 +479,58 @@
         </div>
     </section>
 
-    <section class="frame">
-        <div class="text">Scratch Away the Distance 💌</div>
-        <div class="scratch-gallery">
-            <div class="scratch-card"><div class="scratch-reveal">One Free Hug 🫂</div><canvas class="scratch-canvas" width="130" height="130"></canvas></div>
-            <div class="scratch-card"><div class="scratch-reveal">Coming Soon ✈️</div><canvas class="scratch-canvas" width="130" height="130"></canvas></div>
-            <div class="scratch-card"><div class="scratch-reveal">Always Yours ❤️</div><canvas class="scratch-canvas" width="130" height="130"></canvas></div>
+    <section class="frame" id="moonFrame" style="background: linear-gradient(to bottom, #020107 0%, #201b46 100%);">
+    <div class="text">Two different times, one shared heart. 🌙</div>
+    
+    <div style="display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 500px; margin: 30px auto;">
+        <div style="text-align: center;">
+            <div style="font-size: 0.8rem; color: #ff69b4; margin-bottom: 10px;">Parlin</div>
+            <div style="font-size: 3.5rem; filter: drop-shadow(0 0 15px #fff);">🌙</div>
         </div>
-        <button id="scratch-unlock-btn" class="btn-opt" style="width:200px; display:none;" onclick="updateMeter(55); reveal('Secrets found! Ready for Level 4?', true)">Continue Journey</button>
+
+        <div style="flex-grow: 1; height: 2px; background: linear-gradient(to right, transparent, #ff69b4, transparent); margin: 0 20px; position: relative;">
+            <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 1.2rem;">✈️</div>
+        </div>
+
+        <div style="text-align: center;">
+            <div style="font-size: 0.8rem; color: #ffea00; margin-bottom: 10px;">Vadodara</div>
+            <div style="font-size: 3.5rem; filter: drop-shadow(0 0 15px #ffea00);">☀️</div>
+        </div>
+    </div>
+
+    <div class="box" style="border: none; background: rgba(255,255,255,0.05); padding: 25px;">
+        <p style="font-style: italic; font-size: 1.1rem; line-height: 1.6;">
+            "While I'm falling asleep under the stars in Parlin, you're just starting your day in Vadodara. It’s a long way for a heart to travel, but mine makes the trip every single second. My 'Goodnight' is your 'Good Morning,' and somehow, we make those two worlds meet in the middle every single day."
+        </p>
+    </div>
+
+    <button class="btn-opt" style="margin-top: 30px; width: 220px;" onclick="unlockNext()">Across the Miles ❤️</button>
+</section>
+
+
+<section class="frame">
+    <div class="text">Send your heartbeat to Rudu... 💓</div>
+    
+    <div style="position: relative; height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        
+        <div id="tap-heart" onclick="pulseHeart()" style="font-size: 6rem; cursor: pointer; transition: 0.2s; filter: drop-shadow(0 0 10px rgba(255,105,184,0.3));">❤️</div>
+        
+        <div id="tap-status" style="margin-top: 30px; color: #ff69b4; font-weight: bold; font-family: monospace;">BEATS SENT: 0/10</div>
+        
+        <p id="tap-message" style="margin-top: 15px; font-style: italic; max-width: 280px; text-align: center; opacity: 0; transition: 1s;"></p>
+    </div>
+
+    <button id="tapNextBtn" class="btn-opt" style="display:none; margin-top: 20px;" onclick="unlockNext()">Connection Established</button>
+</section>
+
+    <section class="frame">
+        <div class="text">Scratch, scratch all the way 💌</div>
+        <div class="scratch-gallery">
+            <div class="scratch-card"><div class="scratch-reveal">Warning: Hug debt Accumulating 🫂</div><canvas class="scratch-canvas" width="130" height="130"></canvas></div>
+            <div class="scratch-card"><div class="scratch-reveal">Teleportation still pending 🥺</div><canvas class="scratch-canvas" width="130" height="130"></canvas></div>
+            <div class="scratch-card"><div class="scratch-reveal">Next birthday…no distance! ❤️</div><canvas class="scratch-canvas" width="130" height="130"></canvas></div>
+        </div>
+        <button id="scratch-unlock-btn" class="btn-opt" style="width:200px; display:none;" onclick="updateMeter(55); reveal(`Let's play something now`, true)">Continue Journey</button>
         <p id="scratch-hint" style="margin-top:15px; opacity:0.6;">Scratch deeply to reveal the messages!</p>
     </section>
 
@@ -332,25 +544,33 @@
         <p style="margin-top:10px; font-size:0.8rem; color:#ff69b4;">You must win to earn the next level!</p>
     </section>
 
-    <section class="frame">
-        <div class="text">Why I Love You/ What I love about you 💌</div>
-        <div class="box">
-            <p id="reasonDisplay" style="font-style: italic; min-height: 60px;">Click for a reason...</p>
-            <button class="btn-opt" onclick="genReason()">Generate New Note</button>
-            <button class="btn-opt" style="border-style:dashed" onclick="unlockNext()">Go to Finale</button>
-        </div>
-    </section>
+<section class="frame">
 
-    <section class="frame">
-        <div class="text">Finish the sentence 💭</div>
-        <div class="box">
-            <p>I feel safest when you…</p>
-            <button class="btn-opt" onclick="finishSentence()">Smile at me</button>
-            <button class="btn-opt" onclick="finishSentence()">Call me</button>
-            <button class="btn-opt" onclick="finishSentence()">Just exist</button>
-            <p id="sentenceResult" style="margin-top:15px;color:#ff69b4"></p>
-        </div>
-    </section>
+    <h2>Answer these correctly to move forward 💭</h2>
+
+    <p id="quizQuestion" style="font-size:1.2rem; margin-bottom:15px;"></p>
+
+    <input 
+        type="text"
+        id="quizInput"
+        placeholder="Type your answer..."
+        style="
+            padding:12px;
+            width:80%;
+            max-width:450px;
+            border-radius:10px;
+            border:1px solid #ccc;
+            font-size:1rem;
+        "
+    >
+
+    <br><br>
+
+    <button id="quizSubmit">Submit</button>
+
+    <p id="quizFeedback" style="margin-top:20px; min-height:30px;"></p>
+
+</section>
 
 <section class="frame">
     <div class="text">Piece Us Together 🧩</div>
@@ -371,70 +591,147 @@
 </section>
 
     <section class="frame">
-        <div class="text">Red Flag or Green Flag 🚩💚</div>
-        <div class="box">
-            <p id="flagPrompt">Steals hoodies</p>
-            <button class="btn-opt" onclick="flagChoice()">🚩</button>
-            <button class="btn-opt" onclick="flagChoice()">💚</button>
-            <p id="flagResult" style="margin-top:10px"></p>
-        </div>
+
+    <h2 id="flagRoundTitle"></h2>
+
+    <p id="flagQuestion" style="font-size:1.2rem; margin:20px 0;"></p>
+
+    <div style="display:flex; gap:20px; justify-content:center;">
+        <button id="greenBtn" style="background:#4CAF50; color:white;">Green Flag 💚</button>
+        <button id="redBtn" style="background:#e53935; color:white;">Red Flag 🚩</button>
+    </div>
+
+    <div style="margin-top:25px; height:6px; background:#ddd; width:80%; margin-left:auto; margin-right:auto;">
+        <div id="flagBar" style="height:6px; width:0%; background:#4CAF50;"></div>
+    </div>
     </section>
+    
 
     <section class="frame">
-        <div class="text">Emoji Decode 💌</div>
-        <div style="font-size:2.5rem;margin-bottom:15px">✈️🌍🫂❤️</div>
-        <button class="btn-opt" onclick="decodeEmoji()">Decode</button>
-        <p id="emojiResult" style="margin-top:10px"></p>
-    </section>
+    <div class="text">Emoji Decode 💌</div>
+    <div class="box">
+        <div id="emojiDisplay" style="font-size:2.5rem; margin-bottom:15px; text-shadow: 0 0 10px #ff69b4;">✈️🌍🫂❤️</div>
+        <p id="emojiHint" style="font-size: 0.8rem; color: #ff69b4; margin-bottom: 15px;"></p>
+        
+        <div id="emojiOptions"></div>
+        
+        <p id="emojiResult" style="margin-top:10px; font-weight: bold;"></p>
+    </div>
+</section>
 
     <section class="frame">
-        <div class="text">Plan our date 🍿🍜</div>
+        <div class="text">Plan our next date 🍿🍜</div>
         <div class="box">
-            <button class="btn-opt" onclick="saveDate()">Food 🍕</button>
+            <button class="btn-opt" onclick="saveDate()">Playing some online game 🎮</button>
             <button class="btn-opt" onclick="saveDate()">Movie 🎬</button>
-            <button class="btn-opt" onclick="saveDate()">Time 🌙</button>
+            <button class="btn-opt" onclick="saveDate()">Endless Video Call 📞</button>
             <p id="dateResult" style="margin-top:10px;color:#ff69b4"></p>
         </div>
     </section>
 
-    <section class="frame">
-        <div class="text">Hey…</div>
-        <p style="max-width:650px;margin-top:20px;line-height:1.6">
-            I know this distance isn’t easy.<br>
-            Some days are heavier than others.<br><br>
-            But you’re never doing this alone.<br>
-            I’m always right here.
-        </p>
-        <button class="btn-opt" onclick="unlockNext()" style="margin-top:30px;opacity:0.7">Continue</button>
-    </section>
+<section class="frame" style="background: #050714; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;">
+    
+    <div class="text" style="font-family: 'Great Vibes', cursive; color: #ff69b4; margin-bottom: 20px;">Rhymes for my Superstar 💌</div>
+
+    <div style="position: relative; width: 100%; max-width: 400px; height: 350px; background: #fdf5e6; border-radius: 10px; box-shadow: inset 0 0 50px rgba(0,0,0,0.2), 10px 10px 30px rgba(0,0,0,0.5); overflow-y: auto; padding: 30px; border: 8px solid #3e2723; scrollbar-width: thin;">
+        
+        <div style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif, cursive; color: #3e2723; font-size: 1.4rem; line-height: 1.8; text-align: center;">
+            <p style="margin-bottom: 40px;">The wheels on the bus go round and round,
+To find where Frooti can be found!
+From USA to India’s shore,
+I love my Rockstar more and more! 🚌</p>
+            
+            <p style="margin-bottom: 40px;">Frooti dil ki rani hai,
+Jeevan uska pani hai!
+Hath lagao toh muskurayegi,
+Parlin bulao toh daudi aayegi! 👑</p>
+            
+            <p style="margin-bottom: 40px;">Pitter patter, pitter patter, rain is on the pane,
+Calling Frooti's name again and again.
+Barish aayi, cham-cham-cham,
+Frooti meri, number one! 🌧️</p>
+            
+            <p style="margin-bottom: 40px;">Rain, rain, go away,
+Come again another day.
+Frooti Rockstar wants to play,
+Across the ocean, far away!
+Rain, rain, go to Spain,
+Don't you bother Frooti's brain! 🌧️</p>
+            
+            <p style="margin-bottom: 40px;">Phalo ka raja Aam hai,
+Par Frooti ka alag hi naam hai!
+Meethi-meethi, pyari-pyari,
+Sabse sundar, sabse nyari!
+Vadodara ki shaan hai,
+Meri toh ye jaan hai! ❤️</p>
+            
+            <div style="font-size: 2rem; margin-top: 20px;">📜</div>
+        </div>
+    </div>
+
+    <button class="btn-opt" style="margin-top: 30px; width: 220px; background: rgba(255,105,180,0.2); border: 2px solid #ff69b4;" onclick="unlockNext()">
+        Keep Exploring ❤️
+    </button>
+</section>
+
 
     <section class="frame" id="pathFrame">
         <div class="text">Memory Lane 🤍</div>
-        <p style="font-size: 0.9rem; margin-bottom: 10px; opacity: 0.8;">Click all 20 points to see our photos!</p>
+        <p style="font-size: 0.9rem; margin-bottom: 10px; opacity: 0.8;">Click all the intials to reveal some special message for each initial!</p>
         <div id="pathArea" style="position:relative; width:450px; height:450px;">
             <svg width="450" height="450"><path id="heartPath" class="path-line"></path></svg>
             <div id="heartInitialsWrapper">
-    <div id="heartInitials">R & F</div>
+    <div id="heartInitials">#SaRu Che</div>
 </div>
         </div>
     </section>
 
+    <section class="frame" style="background: #050714; justify-content: space-evenly;">
+    <div class="text" style="font-family: 'Great Vibes', cursive; color: #ff69b4; margin-bottom: 10px;">
+        The comparison that doesn't even make sense 💅
+    </div>
+    
+    <div class="box" style="max-width: 500px; max-height: 60vh; padding: 10px; border: 2px solid #ff69b4; background: rgba(255,105,180,0.1); border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+        <img src="https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/ALOOVSFROOTO.png" 
+             alt="Wifey vs Alia" 
+             style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 15px; box-shadow: 0 0 20px rgba(255,105,180,0.5);">
+    </div>
+
+    <p style="margin-top: 15px; font-size: 1.1rem; font-style: italic; color: #ff69b4;">
+        "I think we all know who the real winner is." 😉
+    </p>
+    
+    <button class="btn-opt" style="margin-top: 10px; width: 220px;" onclick="unlockNext()">Absolutely! ❤️</button>
+</section>
+
     <section class="frame">
-        <div class="text">Happy Birthday! 🎁</div>
-        <div class="gift-container" id="gift" onclick="unwrap()">
-            <div class="gift-lid"></div><div class="gift-box"></div>
-            <div class="reveal-gift">Happy Birthday, FROOTO! 🎂 <br> Love knows no distance. ❤️</div>
+    <div class="text">A Final Secret... 🔒</div>
+    
+    <div id="password-area" style="margin-bottom: 20px;">
+        <p style="font-size: 0.9rem; color: #ff69b4; margin-bottom: 10px;">Enter the secret code to read the letter:</p>
+        <input type="password" id="giftPassword" placeholder="Hint: What comes after Uhn, Uhn, Uhn?" 
+               style="padding: 15px; width: 90%; max-width: 400px; border-radius: 25px; border: 2px solid #ff69b4; background: transparent; color: #fff; text-align: center; outline: none; margin-bottom: 10px;">
+        <br>
+        <button class="btn-opt" style="width: 150px; font-size: 0.7rem; display: inline-block; margin-right: 5px;" onclick="handleGiftClick(true)">Unlock Letter</button>
+        <button class="btn-opt" style="width: 150px; font-size: 0.7rem; display: inline-block; opacity: 0.6;" onclick="handleGiftClick(false)">Guest Mode (No Letter)</button>
+    </div>
+
+    <div class="gift-container" id="gift">
+        <div class="gift-lid"></div>
+        <div class="gift-box"></div>
+        <div class="reveal-gift">
+            Happy Birthday <br> FROOTO 💞
         </div>
-    </section>
+    </div>
+</section>
 </div>
 
 <div id="end-screen">
     <div class="text" style="font-size: 4rem; color: #ff69b4;">The End</div>
-    <p style="font-size: 1.5rem; max-width: 600px; margin-top: 20px; line-height: 1.6;">
-        Our journey is just beginning. <br>
-        Thank you for playing, FROOTI. <br>
-        I love you endlessly. ❤️
-    </p>
+    <h2 id="thankYouTitle">Thank You for Playing 💖</h2>
+<p id="thankYouMessage">
+    I hope you enjoyed this little experience I made for you.
+</p>
     <button class="btn-opt" style="width: 200px; margin-top: 50px;" onclick="location.reload()">Replay Quest 🔄</button>
 </div>
 
@@ -456,26 +753,21 @@
 
     // Photo Array
     const heartPhotos = [
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+1", msg: "Memory 1: Our first chat." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+2", msg: "Memory 2: A silly joke." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+3", msg: "Memory 3: You looked so beautiful." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+4", msg: "Memory 4: Thinking of you." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+5", msg: "Memory 5: Parlin ✈️ Vadodara." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+6", msg: "Memory 6: Counting days." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+7", msg: "Memory 7: Your laugh." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+8", msg: "Memory 8: Late night calls." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+9", msg: "Memory 9: Missing you." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+10", msg: "Memory 10: Halfway through!" },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+11", msg: "Memory 11: A special moment." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+12", msg: "Memory 12: Shared dreams." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+13", msg: "Memory 13: Your kind soul." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+14", msg: "Memory 14: Distance is just a number." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+15", msg: "Memory 15: Elephant hugs." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+16", msg: "Memory 16: Almost there." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+17", msg: "Memory 17: My whole world." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+18", msg: "Memory 18: Love you more." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+19", msg: "Memory 19: One more to go." },
-        { url: "https://via.placeholder.com/300/ff69b4/ffffff?text=Photo+20", msg: "Memory 20: Happy Birthday, Frooti! ❤️" }
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/R.png", msg: "R"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/U.png", msg: "U"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/D.png", msg: "D"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/U2.png", msg: "U"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/L.png", msg: "L"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/O.png", msg: "O"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/V.png", msg: "V"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/E.png", msg: "E"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/S.png", msg: "S"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/F.png", msg: "F"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/R2.png", msg: "R"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/O2.png", msg: "O"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/O3.png", msg: "O"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/T.png", msg: "T"},
+        { url: "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/O4.png", msg: "Forever locked into this moment❤️" }
     ];
 
     // Trail
@@ -501,6 +793,23 @@
     });
 
 
+    // end screen name atttachment
+    function personalizeThankYou() {
+    const name = n();
+
+    const title = document.getElementById("thankYouTitle");
+    const message = document.getElementById("thankYouMessage");
+
+    if (title) {
+        title.innerText = `Thank You for Playing, ${name} 💖`;
+    }
+
+    if (message) {
+        message.innerText =
+            `I hope you enjoyed every section of this little world and it made you feel special and loved.`;
+    }
+}
+
 
     // Unlock Next Logic
     function unlockNext() {
@@ -517,6 +826,10 @@
             reel.style.overflowY = "hidden";
             canScroll = false;
         }, 1200);
+        if (currentSection === 3) {
+    animateStickyNotes();
+    initFinishSentence();
+}
     }
 
     function startQuest() {
@@ -544,7 +857,7 @@
 }
 
     // TYPEWRITER
-    const intro = "PARLIN TO VADODARA: FLIGHT RF-2026. STATUS: BOARDING. ✈️";
+    const intro = "SANJARI DAY 🩷🤍💜 MARCH 1ST 2026 🎂🎁🥳 READY FOR DEPARTURE? ✈️";
     let cIdx = 0; function type() { if(cIdx < intro.length){ document.getElementById("typewriter").innerHTML += intro.charAt(cIdx++); setTimeout(type, 100); } }
     window.onload = type;
 
@@ -556,6 +869,67 @@
     }, 1000);
 
     // FLIGHT
+
+    // NEW FLIGHT ANIMATION WITH FUEL METER
+
+let flightProgress = 0;
+
+function boostPlane() {
+    const plane = document.getElementById('interactive-plane');
+    const status = document.getElementById('flight-status');
+    const btn = document.getElementById('boost-btn');
+    const assets = document.getElementById('flight-assets');
+    const photo = document.getElementById('arrival-photo');
+
+    flightProgress = Math.min(100, flightProgress + 10);
+    plane.style.offsetDistance = flightProgress + "%";
+
+    if (flightProgress < 100) {
+        status.innerText = `Distance Covered: ${flightProgress}%`;
+    } else {
+        // Hide game assets
+        assets.style.display = 'none';
+        
+        // Reveal photo and message together
+        photo.style.display = 'block';
+        setTimeout(() => { 
+            photo.style.opacity = "1"; 
+        }, 50);
+
+        status.innerHTML = "Landed in your heart! ❤️";
+        btn.innerText = "Begin the Memories";
+        btn.onclick = unlockNext; // Moves to the Dynamic Quiz
+        updateMeter(15);
+    }
+}
+
+
+    let notesRevealed = 0;
+
+function revealNote(element, message) {
+    if (!element.classList.contains('revealed')) {
+        element.innerText = message;
+        element.classList.add('revealed');
+        notesRevealed++;
+        
+        // When all 4 notes are read
+        if (notesRevealed === 10) {
+            updateMeter(65);
+            document.getElementById('reasonsNextBtn').style.display = 'block';
+        }
+    }
+}
+
+function animateStickyNotes() {
+    const notes = document.querySelectorAll(".sticky");
+
+    notes.forEach((note, index) => {
+        setTimeout(() => {
+            note.classList.add("drop");
+        }, index * 200);
+    });
+}
+
 
     // Updated Flight Animation
 function startFlight() {
@@ -592,21 +966,104 @@ function startFlight() {
     };
 }
 
+let starsLit = 0;
+let lastStar = null;
+
+function lightStar(el, msg) {
+    if (el.classList.contains('active')) return;
+    
+    el.classList.add('active');
+    document.getElementById('star-msg').innerText = msg;
+    
+    const container = document.getElementById('sky-container').getBoundingClientRect();
+    const rect = el.getBoundingClientRect();
+    const x = rect.left - container.left + 6;
+    const y = rect.top - container.top + 6;
+
+    if (lastStar) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", lastStar.x);
+        line.setAttribute("y1", lastStar.y);
+        line.setAttribute("x2", x);
+        line.setAttribute("y2", y);
+        document.getElementById('star-lines').appendChild(line);
+    }
+
+    lastStar = {x, y};
+    starsLit++;
+
+    if (starsLit === 4) {
+        setTimeout(() => {
+            document.getElementById('star-msg').innerText = "Our love is a galaxy. ❤️";
+            document.getElementById('starNextBtn').style.display = 'block';
+            updateMeter(55); 
+        }, 1000);
+    }
+}
 
 
     // QUIZ
-    const qData = [{q:"Which platform did we first speak on?", a:["Instagram","WhatsApp"], c:1}, {q:"My favorite memory?", a:["Video Calls","Everything"], c:1}];
+    //const qData = [{q:"Which platform did we first speak on?", a:["Instagram","WhatsApp", "Snapchat", "Linkedin"], c:1}, {q:"My favorite memory?", a:["Wedding Day","Madhuban Resort","Kerala Trip","Everything"], c:1}];
+    // Dynamic Quiz Data
+    const qData = [
+    {
+        q: "Which platform did we first speak on?", 
+        a: ["Instagram", "WhatsApp", "Snapchat", "Linkedin"], 
+        correct: "WhatsApp" // Set the specific string as the answer
+    }, 
+    {
+        q: "What is my first gift to you?",
+        a: ["Photo Magnet", "Chocolate Bar", "Hair Bow", "Watch"],
+        correct: "Hair Bow"
+    },
+    {
+        q: "Our First Date?", 
+        a: ["Earthmonk Cafe", "Brewery", "Madhuban Resort", "Car Drive to VVN"], 
+        correct: "Brewery"
+    },
+    {
+        q: "My Favorite Memory?", 
+        a: ["Madhuban Resort", "Kerala Trip", "Wedding Day", "Guess what - all of these and more"], 
+        correct: "Guess what - all of these and more"
+    },
+];
+    
     let curQ = 0;
     function loadQuiz() {
-        const d = qData[curQ]; document.getElementById('qText').innerText = d.q;
-        document.getElementById('quizOptions').innerHTML = d.a.map((opt, i) => `<button class="btn-opt" onclick="checkQuiz(${i})">${opt}</button>`).join('');
+    const d = qData[curQ]; 
+    const quizOptions = document.getElementById('quizOptions');
+    const qText = document.getElementById('qText');
+    
+    qText.innerText = d.q;
+    quizOptions.innerHTML = ""; // Clear old buttons
+    
+    d.a.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-opt';
+        btn.innerText = opt;
+        // This ensures the exact text is passed to the checker
+        btn.onclick = () => checkQuiz(opt); 
+        quizOptions.appendChild(btn);
+    });
     }
-    function checkQuiz(i) {
-        if(i === qData[curQ].c) { 
-            curQ++; 
-            if(curQ < qData.length) { reveal("Correct! ❤️", false); loadQuiz(); } 
-            else { updateMeter(30); reveal("Quiz Complete! Unlocking next level... ✈️", true); } 
-        } else { alert("Not quite! Try to remember..."); }
+    function checkQuiz(selectedText) {
+    const currentQuestion = qData[curQ];
+    
+    console.log("Selected:", selectedText, "Correct:", currentQuestion.correct);
+
+    if (selectedText === currentQuestion.correct) { 
+        curQ++; 
+        if (curQ < qData.length) { 
+            reveal("Correct! ❤️", false); 
+            loadQuiz(); 
+        } 
+        else { 
+            updateMeter(30); 
+            reveal("Quiz Complete! Unlocking next level... ✈️", true); 
+        } 
+    } else { 
+        alert("Not quite! Try to remember..."); 
+    }
     }
     loadQuiz();
 
@@ -640,7 +1097,7 @@ document.querySelectorAll('.scratch-canvas').forEach((cvs) => {
         });
 
         document.getElementById('scratch-hint').innerText =
-            `Every little message was for you, ${n()} 💌`;
+            `Hope you're enjoying the game!!, ${n()} 💌`;
 
         document.getElementById('scratch-unlock-btn').style.display = 'block';
     }, 800);
@@ -663,15 +1120,15 @@ document.querySelectorAll('.scratch-canvas').forEach((cvs) => {
     let bt = ["","","","","","","","",""];
     function playTTT(i) {
         if(bt[i]==="") {
-            bt[i]="X"; document.getElementsByClassName('cell')[i].innerText="X";
-            if(checkW("X")) { updateMeter(75); reveal("You won! You've earned the next level. ❤️", true); return; }
+            bt[i]="💜"; document.getElementsByClassName('cell')[i].innerText="💜";
+            if(checkW("💜")) { updateMeter(75); reveal("You won! You've earned the next level. ❤️", true); return; }
             if(bt.filter(v=>v==="").length === 0) { alert("Tie! Resetting..."); resetTTT(); return; }
             setTimeout(() => { 
                 let e = bt.map((v,idx)=>v===""?idx:null).filter(v=>v!==null); 
                 if(e.length){ 
                     let m=e[Math.floor(Math.random()*e.length)]; 
-                    bt[m]="O"; document.getElementsByClassName('cell')[m].innerText="O"; 
-                    if(checkW("O")) { alert("I won! Restarting..."); resetTTT(); }
+                    bt[m]="❌"; document.getElementsByClassName('cell')[m].innerText="❌"; 
+                    if(checkW("❌")) { alert("I won! Restarting..."); resetTTT(); }
                 } 
             }, 300);
         }
@@ -679,9 +1136,10 @@ document.querySelectorAll('.scratch-canvas').forEach((cvs) => {
     function resetTTT() { bt = ["","","","","","","","",""]; Array.from(document.getElementsByClassName('cell')).forEach(c => c.innerText = ""); }
     function checkW(p) { return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(s => s.every(i => bt[i] === p)); }
 
-    
+
+
     // PUZZLE LOGIC
-const imageUrl = "https://raw.githubusercontent.com/ruddy220497/Test/refs/heads/main/VIP00217.jpg"; // Replace with your photo
+const imageUrl = "https://raw.githubusercontent.com/ruddy220497/Birthday/refs/heads/main/VIP00217.jpg"; // Replace with your photo
 const piecesBin = document.getElementById('piecesBin');
 const boardSlots = document.querySelectorAll('.puzzle-slot');
 let matchedPieces = 0;
@@ -858,6 +1316,346 @@ for(let k=0; k<15; k++){
     setTimeout(unlockNext, 3000);
 }
 
+let beatCount = 0;
+
+function pulseHeart() {
+    const heart = document.getElementById('tap-heart');
+    const status = document.getElementById('tap-status');
+    const msg = document.getElementById('tap-message');
+    const nextBtn = document.getElementById('tapNextBtn');
+
+    if (beatCount < 10) {
+        beatCount++;
+        
+        // Visual Thump
+        heart.style.transform = "scale(1.3)";
+        setTimeout(() => { heart.style.transform = "scale(1)"; }, 100);
+        
+        status.innerText = `BEATS SENT: ${beatCount}/10`;
+
+        if (beatCount === 10) {
+            status.innerText = "HEARTS SYNCED!";
+            status.style.color = "#a9ff68";
+            
+            // Reveal Message
+            msg.innerText = "Every beat of our heart carries a message across the ocean: I love you (sea)much. 🌊❤️";
+            msg.style.opacity = "1";
+            
+            nextBtn.style.display = 'block';
+            updateMeter(55);
+        }
+    }
+}
+    // ===== Finish The Sentence Section =====
+
+// ===== Progressive Question Game =====
+
+const quizData = [
+    {
+        question: "Twinkle Twinkle?",
+        answer: "Little star"   // change to your real answer
+    },
+    {
+        question: "Frooti is a?",
+        answer: "Superstar"  // change this
+    },
+    {
+        question: "Up above the world so high, Frooti is the?",
+        answer: "Apple of my eye"     // change this
+    }
+];
+
+let currentQuestion = 0;
+
+function initQuizGame() {
+
+    const questionEl = document.getElementById("quizQuestion");
+    const inputEl = document.getElementById("quizInput");
+    const submitBtn = document.getElementById("quizSubmit");
+    const feedbackEl = document.getElementById("quizFeedback");
+
+    if (!questionEl || !inputEl || !submitBtn || !feedbackEl) return;
+
+    function loadQuestion() {
+        questionEl.innerText = quizData[currentQuestion].question;
+        inputEl.value = "";
+        feedbackEl.innerText = "";
+    }
+
+    function checkAnswer() {
+        const userAnswer = inputEl.value.trim().toLowerCase();
+        const correctAnswer = quizData[currentQuestion].answer.toLowerCase();
+
+        if (userAnswer === correctAnswer) {
+
+            feedbackEl.innerText = `Correct ✅`;
+
+            currentQuestion++;
+
+            if (currentQuestion < quizData.length) {
+                setTimeout(loadQuestion, 1200);
+            } else {
+
+                feedbackEl.innerText = 
+                    `You got them all right 👏`;
+
+                updateMeter(70); // adjust if needed
+
+                setTimeout(() => {
+                    unlockNext();
+                }, 2000);
+            }
+
+        } else {
+            feedbackEl.innerText = "Hmm… try again 😌";
+        }
+    }
+
+    submitBtn.onclick = checkAnswer;
+
+    inputEl.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            checkAnswer();
+        }
+    });
+
+    loadQuestion();
+}
+
+// Initialize when page loads
+document.addEventListener("DOMContentLoaded", initQuizGame);
+
+
+function popNote(element) {
+    element.classList.toggle('popped');
+    // Optional: Add a small sound or haptic feedback here
+}
+
+
+// ===== Clean Layered Red / Green Flag Game =====
+
+const flagRounds = [
+  {
+    title: "Round 1 — Cute Things 😌",
+    questions: [
+      { text: "He sends good morning texts every day", correct: "green" },
+      { text: "He steals your fries", correct: "green" },
+      { text: "He double texts when he misses you", correct: "green" },
+      { text: "He leaves you on read for 6 hours", correct: "red" },
+      { text: "He remembers small details about you", correct: "green" }
+    ]
+  },
+  {
+    title: "Round 2 — Relationship Depth 💬",
+    questions: [
+      { text: "He communicates when upset", correct: "green" },
+      { text: "He avoids difficult conversations", correct: "red" },
+      { text: "He respects your independence", correct: "green" },
+      { text: "He invalidates your feelings", correct: "red" },
+      { text: "He listens to understand, not to win", correct: "green" }
+    ]
+  },
+  {
+    title: "Round 3 — Long Distance 💌",
+    questions: [
+      { text: "He books tickets instead of saying 'soon'", correct: "green" },
+      { text: "He makes time even on busy days", correct: "green" },
+      { text: "He avoids talking about the future", correct: "red" },
+      { text: `He reminds ${n()} how loved you are`, correct: "green" },
+      { text: "He puts effort into closing the distance", correct: "green" }
+    ]
+  }
+];
+
+let currentRound = 0;
+let currentQuestion1 = 0;
+let flagScore = 0;
+
+const totalQuestions = flagRounds.reduce((sum, r) => sum + r.questions.length, 0);
+let answered = 0;
+
+function initFlagGame() {
+
+  const roundTitle = document.getElementById("flagRoundTitle");
+  const questionEl = document.getElementById("flagQuestion");
+  const greenBtn = document.getElementById("greenBtn");
+  const redBtn = document.getElementById("redBtn");
+  const flagBar = document.getElementById("flagBar");
+
+  if (!roundTitle) return;
+
+  function loadQuestion() {
+    const round = flagRounds[currentRound];
+    const question = round.questions[currentQuestion1];
+
+    roundTitle.innerText = round.title;
+    questionEl.innerText = question.text;
+  }
+
+  function handleAnswer(choice) {
+
+    const round = flagRounds[currentRound];
+    const question = round.questions[currentQuestion1];
+
+    if (choice === question.correct) {
+      flagScore++;
+    }
+
+    answered++;
+    flagBar.style.width = (answered / totalQuestions) * 100 + "%";
+
+    currentQuestion1++;
+
+    if (currentQuestion1 >= round.questions.length) {
+      currentRound++;
+      currentQuestion1 = 0;
+    }
+
+    if (currentRound >= flagRounds.length) {
+      showResult();
+    } else {
+      loadQuestion();
+    }
+  }
+
+  function showResult() {
+
+    roundTitle.innerText = "Final Result 💖";
+
+    if (flagScore >= 12) {
+      questionEl.innerText =
+        `We are literally the greenest flag relationship ever, ${n()} 💚`;
+    } 
+    else if (flagScore >= 8) {
+      questionEl.innerText =
+        `Okay… mostly green with a little chaos 😌`;
+    } 
+    else {
+      questionEl.innerText =
+        `We might need a relationship workshop 😭`;
+    }
+
+    updateMeter(60); // adjust if needed
+
+    setTimeout(() => {
+      unlockNext();
+    }, 2500);
+  }
+
+  greenBtn.onclick = () => handleAnswer("green");
+  redBtn.onclick = () => handleAnswer("red");
+
+  loadQuestion();
+}
+
+document.addEventListener("DOMContentLoaded", initFlagGame);
+
+const emojiLevels = [
+    {
+        emojis: "🌍 ➡️ 📍 ❤️",
+        hint: "Layer 1: The Geography",
+        options: [
+            "Traveling the whole world", 
+            "The entire world is just wherever you are", 
+            "Finding a location on a map"
+        ],
+        correct: "The entire world is just wherever you are"
+    },
+    {
+        emojis: "📱 🕰️ 😴 🚫",
+        hint: "Layer 2: The Routine",
+        options: [
+            "My phone is broken at night", 
+            "Setting an alarm for the morning", 
+            "Sacrificing sleep just to hear your voice"
+        ],
+        correct: "Sacrificing sleep just to hear your voice"
+    },
+    {
+        emojis: "🔒 🗝️ 🧿 🫂",
+        hint: "Layer 3: The Protection",
+        options: [
+            "Protecting our bond from every evil eye", 
+            "Locking the door before sleeping", 
+            "Buying a new necklace for you"
+        ],
+        correct: "Protecting our bond from every evil eye"
+    },
+    {
+        emojis: "🌊 🫂 ☕ ❄️",
+        hint: "Layer 4: The Comfort",
+        options: [
+            "Going to the beach for coffee", 
+            "Winter is very cold this year", 
+            "Being with you feels like a warm cup of coffee on a cold day"
+        ],
+        correct: "Being with you feels like a warm cup of coffee on a cold day"
+    },
+    {
+        emojis: "💍 ✨ ♾️ 🕊️",
+        hint: "Final Layer: The Promise",
+        options: [
+            "Our love is the only thing that is permanent", 
+            "Buying expensive jewelry", 
+            "A bird flying with a ring"
+        ],
+        correct: "Our love is the only thing that is permanent"
+    }
+];
+
+let currentEmojiLayer = 0;
+
+function initEmojiGame() {
+    const display = document.getElementById('emojiDisplay');
+    const hint = document.getElementById('emojiHint');
+    const optionsContainer = document.getElementById('emojiOptions');
+    const feedback = document.getElementById('emojiResult'); // Using your existing ID
+
+    if (!display || !optionsContainer) return;
+
+    const data = emojiLevels[currentEmojiLayer];
+    
+    display.innerText = data.emojis;
+    hint.innerText = `${data.hint} (${currentEmojiLayer + 1}/5)`;
+    optionsContainer.innerHTML = "";
+    feedback.innerText = "";
+
+    data.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-opt';
+        btn.innerText = opt;
+        btn.onclick = () => checkEmojiDecode(opt);
+        optionsContainer.appendChild(btn);
+    });
+}
+
+function checkEmojiDecode(choice) {
+    const feedback = document.getElementById('emojiResult');
+    const correct = emojiLevels[currentEmojiLayer].correct;
+
+    if (choice === correct) {
+        currentEmojiLayer++;
+        feedback.style.color = "#a9ff68";
+        feedback.innerText = "Access Granted... 🔓";
+        
+        if (currentEmojiLayer < emojiLevels.length) {
+            setTimeout(initEmojiGame, 1000);
+        } else {
+            feedback.innerText = "All layers decoded! You know me so well. ❤️";
+            updateMeter(85); 
+            setTimeout(unlockNext, 2000);
+        }
+    } else {
+        feedback.style.color = "#ff4d4d";
+        feedback.innerText = "Incorrect Cipher. Try again... ❌";
+    }
+}
+
+// Add to your DOMContentLoaded listener
+document.addEventListener("DOMContentLoaded", () => {
+    initEmojiGame();
+});
+
     // MODAL HELPERS
     let sn = false;
     function reveal(m, s) { 
@@ -880,7 +1678,49 @@ for(let k=0; k<15; k++){
     }
 }
     function updateMeter(v) { meter.style.width = v + '%'; }
-    function unwrap() { document.getElementById('gift').classList.add('unwrapped'); updateMeter(100); document.getElementById('stamp-14').classList.add('unlocked'); setTimeout(() => { const end = document.getElementById('end-screen'); end.style.display = 'flex'; setTimeout(() => end.style.opacity = "1", 100); }, 3000); }
+
+    function handleGiftClick(isSecretAttempt) {
+    const passInput = document.getElementById('giftPassword').value.trim().toLowerCase();
+    const correctPass = "kab aaoge?"; // Your secret code
+
+    if (isSecretAttempt && passInput === correctPass) {
+        // Path A: The Private Letter
+        alert("Access Granted. Opening your letter now... ❤️");
+        document.getElementById('password-area').style.display = "none";
+        unwrap(true); 
+    } else if (isSecretAttempt && passInput !== correctPass) {
+        // Path B: Wrong Password -> Move forward anyway but hide letter
+        alert("That code is just for Frooti! But you can still finish the journey. ✨");
+        document.getElementById('password-area').style.display = "none";
+        unwrap(false);
+    } else {
+        // Path C: Guest Mode
+        document.getElementById('password-area').style.display = "none";
+        unwrap(false);
+    }
+}
+
+function unwrap(showLetter) { 
+    document.getElementById('gift').classList.add('unwrapped'); 
+    updateMeter(100); 
+    document.getElementById('stamp-14').classList.add('unlocked'); 
+
+    // Only open PDF if the password was correct
+    if (showLetter) {
+        setTimeout(() => {
+            window.open('https://github.com/ruddy220497/Birthday/blob/main/Handwritten%20Birthday%20Letter.pdf', '_blank');
+        }, 1500);
+    }
+
+    // Always move to the final thank you screen
+    setTimeout(() => { 
+        const end = document.getElementById('end-screen'); 
+        end.style.display = 'flex'; 
+        setTimeout(() => end.style.opacity = "1", 100); 
+        personalizeThankYou();
+    }, 4500); 
+}
+    
     function genReason() { const reasons = ["Your heart.", "The way you care.", "Your contagious laugh.", "Everything about you.", "Your Kind Soul", "Inner child that lives in you"]; document.getElementById('reasonDisplay').innerText = reasons[Math.floor(Math.random()*reasons.length)]; }
     function finishSentence(){ document.getElementById("sentenceResult").innerText = "That’s when I fall for you all over again."; updateMeter(5); setTimeout(unlockNext, 1200); }
     let dist = 12000; function shrinkDistance(){ dist -= 4000; document.getElementById("distanceText").innerText = dist <= 0 ? "0 km. I’m right here ❤️" : dist + " km apart"; updateMeter(5); if(dist <= 0) setTimeout(unlockNext, 1200); }
@@ -888,6 +1728,10 @@ for(let k=0; k<15; k++){
     function decodeEmoji(){ document.getElementById("emojiResult").innerText = "No matter the distance, I just want to hold you."; updateMeter(5); setTimeout(unlockNext, 1200); }
     function saveDate(){ document.getElementById("dateResult").innerText = "Saved. We’re doing this soon 💖"; updateMeter(10); setTimeout(unlockNext, 1200); }
     function saveName(){ unlockNext(); }
+    function n() {
+    const input = document.getElementById("nameInput");
+    return input && input.value.trim() ? input.value.trim() : "you";
+}
 
 /* MOBILE POLISH */
 document.addEventListener("touchmove", e => {
