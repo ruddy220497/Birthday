@@ -462,9 +462,9 @@
         <div class="sticky-note" onclick="revealNote(this, 'How incredibly you care about me! ❣️')" style="background: #8668ff; transform: rotate(-2deg); color: #333;">?</div>
         <div class="sticky-note" onclick="revealNote(this, 'How unconditionally you trust me! ❣️')" style="background: #c805bb; transform: rotate(3deg); color: #333;">?</div>
         <div class="sticky-note" onclick="revealNote(this, 'The way you look at me! ❣️')" style="background: #08d4df; transform: rotate(-1deg); color: #333;">?</div>
-        <div class="sticky-note" onclick="revealNote(this, 'The way you demand to be pampered! ❣️')" style="background: #030100; transform: rotate(2deg); color: #333;">?</div>
-        <div class="sticky-note" onclick="revealNote(this, 'You are beautiful inside out! ❣️')" style="background: #a9ff68; transform: rotate(-2deg); color: #333;">?</div>
-        <div class="sticky-note" onclick="revealNote(this, 'The list is endless, for now let us move to the next section! ❣️')" style="background: #ffffff; transform: rotate(3deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'The way you demand to be pampered! ❣️')" style="background: hsl(0, 1%, 47%); transform: rotate(2deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'You are beautiful inside out! ❣️')" style="background: #d03010; transform: rotate(-2deg); color: #333;">?</div>
+        <div class="sticky-note" onclick="revealNote(this, 'The list is endless, for now let us move to the next section! ❣️')" style="background: hsl(298, 97%, 47%); transform: rotate(3deg); color: #333;">?</div>
     </div>
 
     <button id="reasonsNextBtn" class="btn-opt" style="display:none; margin-top: 30px; width: 200px;" onclick="unlockNext()">Continue Journey</button>
@@ -688,7 +688,7 @@ Meri toh ye jaan hai! ❤️</p>
 
     <section class="frame" style="background: #050714; justify-content: space-evenly;">
     <div class="text" style="font-family: 'Great Vibes', cursive; color: #ff69b4; margin-bottom: 10px;">
-        The comparison that doesn't even make sense 💅
+        The comparison that doesn't even make sense 🤦‍♂️
     </div>
     
     <div class="box" style="max-width: 500px; max-height: 60vh; padding: 10px; border: 2px solid #ff69b4; background: rgba(255,105,180,0.1); border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
@@ -698,7 +698,7 @@ Meri toh ye jaan hai! ❤️</p>
     </div>
 
     <p style="margin-top: 15px; font-size: 1.1rem; font-style: italic; color: #ff69b4;">
-        "I think we all know who the real winner is." 😉
+        "I think we all know who the real winner is." 🎀
     </p>
     
     <button class="btn-opt" style="margin-top: 10px; width: 220px;" onclick="unlockNext()">Absolutely! ❤️</button>
@@ -1681,7 +1681,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function handleGiftClick(isSecretAttempt) {
     const passInput = document.getElementById('giftPassword').value.trim().toLowerCase();
-    const correctPass = "kab aaoge?"; // Your secret code
+    const correctPass = "1234?"; // Your secret code
 
     if (isSecretAttempt && passInput === correctPass) {
         // Path A: The Private Letter
@@ -1700,27 +1700,59 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 }
 
-function unwrap(showLetter) { 
-    document.getElementById('gift').classList.add('unwrapped'); 
-    updateMeter(100); 
-    document.getElementById('stamp-14').classList.add('unlocked'); 
+function handleGiftClick(isSecretAttempt) {
+    // .replace(/\s+/g, ' ') ensures multiple spaces count as one
+    const passInput = document.getElementById('giftPassword').value.trim().toLowerCase().replace(/\s+/g, ' ');
+    
+    // This is exactly what she must type (case doesn't matter)
+    const correctPass = "kab aaoge?"; 
 
-    // Only open PDF if the password was correct
+    if (isSecretAttempt && passInput === correctPass) {
+        // SUCCESS: Open the letter
+        window.open('https://github.com/ruddy220497/Birthday/blob/main/Handwritten%20Birthday%20Letter.pdf', '_blank');
+        
+        document.getElementById('password-area').style.display = "none";
+        // Call unwrap(false) so it doesn't try to open the letter a second time
+        unwrap(false); 
+    } else {
+        // FAIL: Wrong password or Guest Mode
+        alert("That code is just for Frooti! But you can still finish the journey. ✨");
+        document.getElementById('password-area').style.display = "none";
+        unwrap(false);
+    }
+}
+    
+function unwrap(showLetter) { 
+    // Start the animation by adding the 'unwrapped' class
+    const gift = document.getElementById('gift');
+    if (gift) gift.classList.add('unwrapped'); 
+
+    // Complete the love meter and light the final stamp
+    updateMeter(100); 
+    const finalStamp = document.getElementById('stamp-15');
+    if (finalStamp) finalStamp.classList.add('unlocked'); 
+
+    // If the letter wasn't opened yet, open it after the animation
     if (showLetter) {
         setTimeout(() => {
             window.open('https://github.com/ruddy220497/Birthday/blob/main/Handwritten%20Birthday%20Letter.pdf', '_blank');
         }, 1500);
     }
 
-    // Always move to the final thank you screen
+    // Trigger the final End Screen
     setTimeout(() => { 
         const end = document.getElementById('end-screen'); 
-        end.style.display = 'flex'; 
-        setTimeout(() => end.style.opacity = "1", 100); 
-        personalizeThankYou();
+        if (end) {
+            end.style.display = 'flex'; 
+            // Small delay to ensure display:flex is rendered
+            setTimeout(() => {
+                end.style.opacity = "1";
+            }, 100); 
+            personalizeThankYou();
+        }
     }, 4500); 
 }
-    
+
     function genReason() { const reasons = ["Your heart.", "The way you care.", "Your contagious laugh.", "Everything about you.", "Your Kind Soul", "Inner child that lives in you"]; document.getElementById('reasonDisplay').innerText = reasons[Math.floor(Math.random()*reasons.length)]; }
     function finishSentence(){ document.getElementById("sentenceResult").innerText = "That’s when I fall for you all over again."; updateMeter(5); setTimeout(unlockNext, 1200); }
     let dist = 12000; function shrinkDistance(){ dist -= 4000; document.getElementById("distanceText").innerText = dist <= 0 ? "0 km. I’m right here ❤️" : dist + " km apart"; updateMeter(5); if(dist <= 0) setTimeout(unlockNext, 1200); }
